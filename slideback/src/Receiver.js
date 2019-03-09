@@ -2,12 +2,10 @@ import React, { Component } from 'react';
 
 import io from 'socket.io-client';
 import { Document, Page } from 'react-pdf';
-import BpkButton from 'react-native-bpk-component-button';
 
 import {
   Button, ButtonGroup, Col, Container, DropdownButton, Form, Dropdown, Row,
 } from 'react-bootstrap';
-import str from 'react-bootstrap/es/SplitButton';
 import { SOCKET_URL } from './config';
 
 class Receiver extends Component {
@@ -101,7 +99,7 @@ class Receiver extends Component {
     }
 
     render() {
-      const { pageNumber, numPages } = this.state;
+      const { pageNumber } = this.state;
 
       return (
         <Container fluid>
@@ -132,7 +130,7 @@ class Receiver extends Component {
                       onChange={e => this.handleChange(e)}
                     />
                   </Form.Group>
-                  <BpkButton type="submit">Submit form</BpkButton>
+                  <Button type="submit">Submit form</Button>
 
                 </Form>
 

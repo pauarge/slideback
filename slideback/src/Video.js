@@ -1,7 +1,6 @@
 import React from 'react';
 import Webcam from 'react-webcam';
 import request from 'superagent';
-import base64Img from 'base64-img';
 
 
 class Video extends React.Component {
@@ -54,10 +53,12 @@ class Video extends React.Component {
 
 
   componentDidMount() {
-    this.state.intervalID = setInterval(
-      () => this.capture(),
-      10000,
-    );
+    this.setState({
+      intervalID: setInterval(
+          () => this.capture(),
+          10000,
+      )
+    });
   }
 
 
@@ -85,7 +86,7 @@ class Video extends React.Component {
         {this.state.imageData
           ? (
             <p>
-              <img ref="currentImage" src={this.state.imageData} />
+              <img alt="currentImg" ref="currentImage" src={this.state.imageData} />
             </p>
           )
           : null}

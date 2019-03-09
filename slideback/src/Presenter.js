@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Document, Page } from 'react-pdf';
 import {
+  Button,
   ButtonToolbar,
   Alert,
   ProgressBar,
@@ -145,10 +146,10 @@ class Presenter extends Component {
               <div className="button">
                 <ButtonToolbar>
                   <ButtonGroup className="mr-4">
-                    <BpkButton onClick={() => this.prevPage()}>Prev</BpkButton>
+                    <Button onClick={() => this.prevPage()}>Prev</Button>
                   </ButtonGroup>
                   <ButtonGroup className="mr-4">
-                    <BpkButton onClick={() => this.nextPage()}>Next</BpkButton>
+                    <Button onClick={() => this.nextPage()}>Next</Button>
                   </ButtonGroup>
                   <p>Page {pageNumber} of {numPages}</p>
                 </ButtonToolbar>
@@ -159,20 +160,20 @@ class Presenter extends Component {
 
               {this.state.alertFirst
                 ? (
-                  <BpkAlert defaultShow={this.state.alertFirst} variant="info first">
+                  <Alert defaultShow={this.state.alertFirst} variant="info first">
                     <Alert.Heading>You are already in the first page of the document</Alert.Heading>
                     <p>To continue click of 'Prev'</p>
-                  </BpkAlert>
+                  </Alert>
                 ) : ''
                         }
 
 
               {this.state.alertLast
                 ? (
-                  <BpkAlert variant="info last">
+                  <Alert variant="info last">
                     <Alert.Heading>You are already in the last page of the document</Alert.Heading>
                     <p>To continue click of 'Next'</p>
-                  </BpkAlert>
+                  </Alert>
                 ) : ''
                         }
 
