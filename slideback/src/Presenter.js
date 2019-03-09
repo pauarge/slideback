@@ -79,11 +79,11 @@ class Presenter extends Component {
           </ButtonToolbar>
         </div>
 
-        <Alert show={this.state.alertFirst} variant="info first">
+        <Alert defaultShow={this.state.alertFirst} variant="info first">
           <Alert.Heading>You are already in the first page of the document</Alert.Heading>
         </Alert>
 
-        <Alert show={this.state.alertLast} variant="info last">
+        <Alert defaultShow={this.state.alertLast} variant="info last">
           <Alert.Heading>You are already in the last page of the document</Alert.Heading>
         </Alert>
 
@@ -95,7 +95,7 @@ class Presenter extends Component {
         </Document>
         <p>Page {pageNumber} of {numPages}</p>
         <p>Satisfaction level</p>
-        <p><ProgressBar now={now} label={`${now}%`} /></p>
+        <ProgressBar now={now} label={`${now}%`} />
       </div>
     );
   }
