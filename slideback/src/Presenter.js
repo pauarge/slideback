@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Document, Page} from 'react-pdf';
-import {Button, ButtonToolbar, Alert} from "react-bootstrap";
+import {Button, ButtonToolbar, Alert, ProgressBar} from "react-bootstrap";
 import io from "socket.io-client";
 
 class Presenter extends Component {
@@ -66,6 +66,7 @@ class Presenter extends Component {
 
   render() {
     const {pageNumber, numPages} = this.state;
+    const now = 60;
 
     return (
       <div>
@@ -91,6 +92,8 @@ class Presenter extends Component {
           <Page pageNumber={pageNumber}/>
         </Document>
         <p>Page {pageNumber} of {numPages}</p>
+        <p>Satisfaction level</p>
+        <p><ProgressBar now={now} label={`${now}%`} /></p>
       </div>
     );
   }
