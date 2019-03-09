@@ -1,6 +1,7 @@
-import React, { Component } from 'react';
-import { Document, Page } from 'react-pdf';
+import React, {Component} from 'react';
+import {Document, Page} from 'react-pdf';
 import {Button, ButtonToolbar, Alert} from "react-bootstrap";
+import io from "socket.io-client";
 
 class Presenter extends Component {
   constructor(props) {
@@ -11,49 +12,67 @@ class Presenter extends Component {
       pageNumber: 1,
       alertFirst: false,
       alertLast: false,
-    }
+    };
+
+    this.socket = null;
   }
 
-  onDocumentLoadSuccess = ({ numPages }) => {
-    this.setState({ numPages });
+  componentDidMount() {
+    this.socket = io('http://localhost:4000', {query: "mode=presenter"});
+  }
+
+  onDocumentLoadSuccess = ({numPages}) => {
+    this.setState({numPages});
   };
 
   nextPage() {
-    if (this.state.pageNumber === this.state.numPages && ! this.state.alertLast){
-
-      this.setState({alertLast: true})
+    let newPageNumber;
+    if (this.state.pageNumber === this.state.numPages && !this.state.alertLast) {
+      this.setState({alertLast: true});
+    } else if (this.state.pageNumber === this.state.numPages && this.state.alertLast) {
+      newPageNumber = 1;
+      this.setState({alertLast: false});
+    } else {
+      newPageNumber = this.state.pageNumber + 1;
+      this.setState({alertLast: false, alertFirst: false})
     }
-    else if (this.state.pageNumber === this.state.numPages && this.state.alertLast){
-      this.setState({alertLast: false, pageNumber: 1})
 
-    }
-    else{
-      this.setState({pageNumber: this.state.pageNumber + 1, alertLast: false, alertFirst: false})
-
+    if (newPageNumber) {
+      this.setState({
+        pageNumber: newPageNumber
+      }, () => this.socket.emit('pageChange', this.state.pageNumber))
     }
   };
 
   prevPage() {
-    if (this.state.pageNumber === 1 && ! this.state.alertFirst){
+    let newPageNumber;
+    if (this.state.pageNumber === 1 && !this.state.alertFirst) {
       this.setState({alertFirst: true})
-    } else if (this.state.pageNumber === 1 &&  this.state.alertFirst) {
-      this.setState({pageNumber: this.state.numPages, alertFirst: false})
+    } else if (this.state.pageNumber === 1 && this.state.alertFirst) {
+      newPageNumber = this.state.numPages;
+      this.setState({alertFirst: false})
+    } else {
+      newPageNumber = this.state.pageNumber - 1;
+      this.setState({alertFirst: false, alertLast: false})
     }
-    else{
-      this.setState({pageNumber: this.state.pageNumber - 1, alertFirst: false, alertLast: false})
+
+    if (newPageNumber) {
+      this.setState({
+        pageNumber: newPageNumber
+      }, () => this.socket.emit('pageChange', this.state.pageNumber))
     }
   };
 
 
   render() {
-    const { pageNumber, numPages } = this.state;
+    const {pageNumber, numPages} = this.state;
 
     return (
       <div>
         <div className="button">
           <ButtonToolbar>
-            <Button onClick={() => this.nextPage()} as="input" type="button" value=" Next " />
-            <Button onClick={() => this.prevPage()} as="input" type="button" value=" Prev " />
+            <Button onClick={() => this.nextPage()} as="input" type="button" value=" Next "/>
+            <Button onClick={() => this.prevPage()} as="input" type="button" value=" Prev "/>
           </ButtonToolbar>
         </div>
 
@@ -69,7 +88,7 @@ class Presenter extends Component {
           file={process.env.PUBLIC_URL + "./Report_hw2_bolon.pdf"}
           onLoadSuccess={this.onDocumentLoadSuccess}
         >
-          <Page pageNumber={pageNumber} />
+          <Page pageNumber={pageNumber}/>
         </Document>
         <p>Page {pageNumber} of {numPages}</p>
       </div>
