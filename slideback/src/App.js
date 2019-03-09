@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {Navbar, Nav, Container} from 'react-bootstrap';
+import React, { Component } from 'react';
+import { Navbar, Nav, Container } from 'react-bootstrap';
 import './App.css';
 
 import Presenter from './Presenter';
@@ -48,7 +48,7 @@ class App extends Component {
           <Navbar fixed="top" bg="light" expand="lg">
             <Navbar.Brand href="#home">SlideBack</Navbar.Brand>
             <Navbar.Text> </Navbar.Text>
-            <Navbar.Toggle aria-controls="basic-navbar-nav"/>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="mr-auto">
                 <Nav.Link eventKey={1} onClick={() => this.changePage('presenter')}>Presenter</Nav.Link>
@@ -61,10 +61,10 @@ class App extends Component {
 
 
         <div className="content">
-          <Container fluid={true}>
-            {this.state.displayPresenter && <Presenter/>}
-            {this.state.displayReceiver && <Receiver/>}
-            {this.state.displayVideo && <Video/>}
+          <Container fluid>
+            {this.state.displayPresenter && <Presenter />}
+            {this.state.displayReceiver && <Receiver />}
+            {this.state.displayVideo && <Video />}
           </Container>
         </div>
       </div>

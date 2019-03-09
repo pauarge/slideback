@@ -4,9 +4,11 @@ var io = require('socket.io')(http);
 var base64Img = require('base64-img');
 var request = require('superagent');
 
-var pdfUtil = require('pdf-to-text');
+
+var extract = require('pdf-text-extract')
 
 const fetch = require("node-fetch");
+const pdf_options = {max: 1}
 
 
 const fs = require('fs');
@@ -23,6 +25,7 @@ var cors = require('cors');
 var bodyParser = require('body-parser');
 var aws = require('aws-sdk');
 
+app.use(cors());
 app.use(bodyParser.json({limit: '64mb'}));
 
 
@@ -87,34 +90,19 @@ app.post('/image', (req, res) => {
   res.json('ok');
 });
 
-app.post('/test-upload', (request, response) => {
+app.post('/upload', (request, response) => {
   const form = new multiparty.Form();
   form.parse(request, async (error, fields, files) => {
     if (error) throw new Error(error);
     try {
       const path = files.file[0].path;
 
-      const option = {from: 0, to: 10};
-      pdfUtil.pdfToText(path, option, function(err, data) {
-        if (err) throw(err);
-
-        const url = "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=en&to=fr-ch";
-
-        fetch(url, {
-          method: 'POST',
-          mode: "cors",
-          headers: {
-            "Content-Type": "application/json",
-            "Ocp-Apim-Subscription-Key": "b69042f258414c4a9974fbea3cc3f375"
-            // "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: JSON.stringify([{'Text': data}]),
-        })
-          .then(resp => resp.json())
-          .then(jdata => {
-            io.emit('translation', jdata[0].translations[0].text);
-            //console.log(jdata[0].translations[0].text)
-          });
+      extract(path, function (err, pages) {
+        if (err) {
+          console.dir(err)
+          return
+        }
+        io.emit('newText', JSON.stringify(pages))
       });
 
       const buffer = fs.readFileSync(path);
@@ -131,6 +119,29 @@ app.post('/test-upload', (request, response) => {
     }
   });
 });
+
+
+app.post('/translate', (request, response) => {
+  const url = `https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=en&to=${request.body.lang}`;
+
+        fetch(url, {
+          method: 'POST',
+          mode: "cors",
+          headers: {
+            "Content-Type": "application/json",
+            "Ocp-Apim-Subscription-Key": "b69042f258414c4a9974fbea3cc3f375"
+            // "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: JSON.stringify([{'Text': request.body.text}]),
+        })
+          .then(resp => resp.json())
+          .then(jdata => {
+            response.json({'text': jdata[0].translations[0].text})
+            //console.log(jdata[0].translations[0].text)
+          });
+  });
+
+
 
 io.on('connection', function (socket) {
   console.log("Query: ", socket.handshake.query);
