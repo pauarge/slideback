@@ -3,13 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "axios": "^0.18.0",
+    "base64-img": "^1.0.4",
+    "base64-to-image": "^1.0.2",
     "react": "^16.8.4",
     "react-bootstrap": "^v1.0.0-beta.5",
     "react-dom": "^16.8.4",
     "react-pdf": "^4.0.5",
     "react-scripts": "2.1.8",
     "react-webcam": "^1.1.1",
-    "socket.io-client": "^2.2.0"
+    "socket.io-client": "^2.2.0",
+    "superagent": "^4.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
