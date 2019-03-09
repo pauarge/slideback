@@ -1,9 +1,11 @@
 import React, {Component} from 'react';
 import {Document, Page} from 'react-pdf';
-import {Button, ButtonToolbar, Alert, ProgressBar, Container, Row, Col} from "react-bootstrap";
+import {Button, ButtonToolbar, Alert, ProgressBar, Container, Row, Col, InputGroup, FormControl, ButtonGroup} from "react-bootstrap";
 import io from "socket.io-client";
 
 import { SOCKET_URL } from './config';
+
+import Comments from './Comments'
 
 
 class Presenter extends Component {
@@ -15,6 +17,8 @@ class Presenter extends Component {
       pageNumber: 1,
       alertFirst: false,
       alertLast: false,
+      comments: [],
+      attentionScore: 100
     };
 
     this.socket = null;
@@ -23,7 +27,21 @@ class Presenter extends Component {
   componentDidMount() {
     this.socket = io(SOCKET_URL, {query: "mode=presenter"});
 
+    this.socket.on('newScore', function (data) {
+      console.log('new score = ', data);
+      this.setState({
+        attentionScore: data
+      })
+    });
 
+    this.socket.on('newComment', comment => {
+      const comments = this.state.comments
+      comments.push(comment);
+      this.setState({
+        textData: '',
+        comments
+      })
+    })
   }
 
   onDocumentLoadSuccess = ({numPages}) => {
@@ -71,20 +89,17 @@ class Presenter extends Component {
 
   render() {
 
-  this.socket.on('newScore', function (data) {
-    console.log('new score = ', data);
-    this.now = data;
-  });
+
 
 
     const {pageNumber, numPages} = this.state;
-    const now = 60;
+    const now = this.state.attentionScore;
 
     return (
         <Container>
           <Row>
 
-          <Col sm={6}>
+          <Col sm={7}>
 
 
             <Document
@@ -94,7 +109,7 @@ class Presenter extends Component {
               <Page pageNumber={pageNumber}/>
             </Document>
           </Col>
-          <Col sm={6}>
+          <Col sm={5}>
 
             <br></br>
             <br></br>
@@ -103,8 +118,13 @@ class Presenter extends Component {
 
             <div className="button">
               <ButtonToolbar>
-                <Button onClick={() => this.prevPage()}>Prev</Button>
-                <Button onClick={() => this.nextPage()}>Next</Button>
+                <ButtonGroup className="mr-4">
+                  <Button onClick={() => this.prevPage()}>Prev</Button>
+                </ButtonGroup>
+                <ButtonGroup className="mr-4">
+                  <Button onClick={() => this.nextPage()}>Next</Button>
+                </ButtonGroup>
+                <p>Page {pageNumber} of {numPages}</p>
               </ButtonToolbar>
             </div>
 
@@ -126,15 +146,51 @@ class Presenter extends Component {
                 </Alert>) : ''
             }
 
+
+
+
             <br></br>
 
-            <p>Page {pageNumber} of {numPages}</p>
+            <div className="Satisfaction bar">
+              <Row>
+                <Col sm={4}>
+                  <p>Satisfaction level: </p>
+                </Col>
+                <Col sm={8}>
+                  <ProgressBar now={this.state.pageNumber * this.state.numPages} label={`${this.state.pageNumber * this.state.numPages}%`} />
+                </Col>
+              </Row>
+            </div>
+
 
             <br></br>
+            <div className="upload-document">
+              <p>Upload your new presentation: </p>
+            <div className="input-group">
+              <div className="input-group-prepend">
+                <span className="input-group-text" id="inputGroupFileAddon01">Upload</span>
+              </div>
+              <div className="custom-file">
+                <input
+                    type="file"
+                    className="custom-file-input"
+                    id="inputGroupFile01"
+                    aria-describedby="inputGroupFileAddon01"
+                />
+                <label className="custom-file-label" htmlFor="inputGroupFile01">
+                  Choose file
+                </label>
+              </div>
+            </div>
+            </div>
 
-
-            <p>Satisfaction level</p>
-            <ProgressBar now={now} label={`${now}%`} />
+            <div>
+              <div className="doubts">
+                {this.state.comments.map(comment => {
+                  return <p>{comment}</p>
+                })}
+              </div>
+            </div>
 
           </Col>
           </Row>

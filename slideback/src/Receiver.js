@@ -4,6 +4,9 @@ import io from 'socket.io-client';
 import {Document, Page} from "react-pdf";
 
 import { SOCKET_URL } from './config';
+import { Col, Container, ProgressBar, Row} from "react-bootstrap";
+
+import Comments from './Comments'
 
 class Receiver extends Component {
   constructor(props) {
@@ -26,22 +29,52 @@ class Receiver extends Component {
         pageNumber: page
       })
     })
+
+
   }
 
   onDocumentLoadSuccess = ({ numPages }) => {
     this.setState({ numPages });
   };
 
+
+
   render() {
     const { pageNumber, numPages } = this.state;
 
     return (
-      <Document
-        file={process.env.PUBLIC_URL + "./Report_hw2_bolon.pdf"}
-        onLoadSuccess={this.onDocumentLoadSuccess}
-      >
-        <Page pageNumber={pageNumber} />
-      </Document>
+        <Container>
+          <Row>
+
+            <Col sm={7}>
+
+
+              <Document
+                  file={process.env.PUBLIC_URL + "./Report_hw2_bolon.pdf"}
+                  onLoadSuccess={this.onDocumentLoadSuccess}
+              >
+                <Page pageNumber={pageNumber} />
+              </Document>
+            </Col>
+            <Col sm={5}>
+
+              <br></br>
+              <br></br>
+              <br></br>
+              <br></br>
+
+
+              <br></br>
+              <Comments/>
+
+
+            </Col>
+          </Row>
+        </Container>
+
+
+
+
     )
   }
 }
