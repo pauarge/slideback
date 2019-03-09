@@ -99,7 +99,7 @@ class Presenter extends Component {
     event.preventDefault();
     const formData = new FormData();
     formData.append('file', this.state.file[0]);
-    axios.post(`http://localhost:8081/test-upload`, formData, {
+    axios.post(`${SOCKET_URL}/test-upload`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
