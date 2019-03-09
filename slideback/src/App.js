@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Navbar, Nav, Container} from 'react-bootstrap';
+import {Navbar, Nav, Container, ButtonToolbar, Button} from 'react-bootstrap';
 import './App.css';
 
 import Presenter from './Presenter';
@@ -39,6 +39,8 @@ class App extends Component {
     }
   }
 
+
+
   render() {
     return (
       <div className="App">
@@ -56,6 +58,7 @@ class App extends Component {
 
         <div className="content">
           <Container>
+
             {this.state.displayPresenter && <Presenter/>}
             {this.state.displayReceiver && <Receiver/>}
             {this.state.displayVideo && <Video/>}
