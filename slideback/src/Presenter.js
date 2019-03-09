@@ -22,6 +22,8 @@ class Presenter extends Component {
 
   componentDidMount() {
     this.socket = io(SOCKET_URL, {query: "mode=presenter"});
+
+
   }
 
   onDocumentLoadSuccess = ({numPages}) => {
@@ -68,6 +70,13 @@ class Presenter extends Component {
 
 
   render() {
+
+  this.socket.on('newScore', function (data) {
+    console.log('new score = ', data);
+    this.now = data;
+  });
+
+
     const {pageNumber, numPages} = this.state;
     const now = 60;
 
