@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Navbar, Nav, NavItem } from 'react-bootstrap';
+import React, {Component} from 'react';
+import {Navbar, Nav, Container, ButtonToolbar, Button} from 'react-bootstrap';
 import './App.css';
 
 import Presenter from './Presenter';
@@ -39,27 +39,30 @@ class App extends Component {
     }
   }
 
+
+
   render() {
     return (
       <div className="App">
-        <Navbar fixedTop>
-          <Navbar.Header>
-            <Navbar.Brand >LauzHack Live</Navbar.Brand>
-            <Navbar.Toggle />
-          </Navbar.Header>
-          <Navbar.Collapse>
-            <Nav>
-              <NavItem eventKey={1} onClick={() => this.changePage('presenter')}>Presenter</NavItem>
-              <NavItem eventKey={2} onClick={() => this.changePage('receiver')}>Receiver</NavItem>
-              <NavItem eventKey={3} onClick={() => this.changePage('video')}>Video</NavItem>
+        <Navbar fixed="top" bg="light" expand="lg">
+          <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="mr-auto">
+              <Nav.Link eventKey={1} onClick={() => this.changePage('presenter')}>Presenter</Nav.Link>
+              <Nav.Link eventKey={2} onClick={() => this.changePage('receiver')}>Receiver</Nav.Link>
+              <Nav.Link eventKey={3} onClick={() => this.changePage('video')}>Video</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Navbar>
 
         <div className="content">
-          {this.state.displayPresenter && <Presenter />}
-          {this.state.displayReceiver && <Receiver />}
-          {this.state.displayVideo && <Video />}
+          <Container>
+
+            {this.state.displayPresenter && <Presenter/>}
+            {this.state.displayReceiver && <Receiver/>}
+            {this.state.displayVideo && <Video/>}
+          </Container>
         </div>
       </div>
     );
