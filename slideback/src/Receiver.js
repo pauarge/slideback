@@ -104,7 +104,8 @@ class Receiver extends Component {
     }
 
     render() {
-      const { pageNumber } = this.state;
+      const { pageNumber, comments } = this.state;
+      const reversed = comments.slice().reverse();
 
       return (
         <Container fluid>
@@ -141,7 +142,7 @@ class Receiver extends Component {
 
               <Scrollbars style={{ width: 500, height: 200 }}>
                 <div className="comment">
-                  {this.state.comments.reverse().map(comment => <p>{comment}</p>)}
+                  {reversed.map(comment => <p>{comment}</p>)}
                 </div>
               </Scrollbars>
               </div>

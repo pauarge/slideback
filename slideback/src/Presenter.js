@@ -119,7 +119,8 @@ class Presenter extends Component {
     };
 
     render() {
-      const { pageNumber, numPages } = this.state;
+      const { pageNumber, numPages, comments } = this.state;
+      const reversed = comments.slice().reverse();
       // const now = this.state.attentionScore;
 
       return (
@@ -188,7 +189,6 @@ class Presenter extends Component {
                 </Row>
               </div>
 
-
               <br />
 
               <div className="upload-document">
@@ -220,7 +220,7 @@ class Presenter extends Component {
                 <br/>
                   <h5> Students comments </h5>
                 <div className="doubts">
-                  {this.state.comments.map(comment => <p>{comment}</p>)}
+                  {reversed.map(comment => <p>{comment}</p>)}
                 </div>
               </div>
 
