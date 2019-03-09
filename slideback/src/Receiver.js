@@ -121,15 +121,12 @@ class Receiver extends Component {
               <Button onclick={() => this.translate()}>halo</Button>
 
               <br></br>
-              <Comments/>
+              <Comments socket={this.socket}/>
 
 
             </Col>
           </Row>
         </Container>
-
-
-
 
     )
   }

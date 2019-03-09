@@ -6,8 +6,6 @@ import axios from 'axios';
 
 import { SOCKET_URL } from './config';
 
-import Comments from './Comments'
-
 
 class Presenter extends Component {
   constructor(props) {
@@ -38,7 +36,7 @@ class Presenter extends Component {
       })
     });
 
-    this.socket.on('newComment', comment => {
+    this.socket.on('newCommentServer', comment => {
       const comments = this.state.comments
       comments.push(comment);
       this.setState({

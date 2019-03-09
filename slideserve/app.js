@@ -113,6 +113,10 @@ io.on('connection', function (socket) {
   socket.on('newDoc', url => {
     socket.broadcast.emit('newDoc', url);
   })
+
+  socket.on('newComment', comment => {
+    socket.broadcast.emit('newCommentServer', comment);
+  })
 });
 
 

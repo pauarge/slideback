@@ -7,8 +7,10 @@ class Comments extends Component {
 
         this.state = {
             textData: '',
-            comments: []
+            comments: [],
         }
+
+        this.socket = props.socket;
 
     }
 
@@ -26,7 +28,7 @@ class Comments extends Component {
             textData: '',
             comments
         })
-
+        this.socket.emit('newComment', this.state.textData);
     }
 
     render() {
@@ -50,9 +52,6 @@ class Comments extends Component {
                     })}
                 </div>
             </div>
-
-
-
 
         );
     }
