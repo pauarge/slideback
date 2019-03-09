@@ -25,7 +25,7 @@ class Presenter extends Component {
       pageNumber: 1,
       alertFirst: false,
       alertLast: false,
-      pdfURL: null,
+      pdfURL: undefined,
       comments: [],
       attentionScore: 100,
     };
@@ -138,11 +138,6 @@ class Presenter extends Component {
             </Col>
             <Col sm={5}>
 
-              <br />
-              <br />
-              <br />
-              <br />
-
               <div className="button">
                 <ButtonToolbar>
                   <ButtonGroup className="mr-4">
@@ -197,7 +192,7 @@ class Presenter extends Component {
               <br />
 
               <div className="upload-document">
-                <p>Upload your new presentation: </p>
+                <h5>Upload your new presentation: </h5>
                 <form onSubmit={this.submitFile}>
                   <div className="input-group">
 
@@ -209,8 +204,8 @@ class Presenter extends Component {
                             aria-describedby="inputGroupFileAddon01"
                             onChange={this.handleFileUpload}
                           />
-                        <label className="custom-file-label" htmlFor="inputGroupFile01">
-                                            Choose file
+                        <label className="custom-file-label" htmlFor="inputGroupFile01" defaultValue="Choose File">
+                          {this.state.pdfURL !== undefined ? 'Document currently displayed' : ''}
                           </label>
                       </div>
 
@@ -222,6 +217,8 @@ class Presenter extends Component {
               </div>
 
               <div>
+                <br/>
+                  <h5> Students comments </h5>
                 <div className="doubts">
                   {this.state.comments.map(comment => <p>{comment}</p>)}
                 </div>

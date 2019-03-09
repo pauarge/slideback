@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import io from 'socket.io-client';
 import { Document, Page } from 'react-pdf';
@@ -118,29 +119,29 @@ class Receiver extends Component {
             </Col>
             <Col sm={5}>
 
-              <br />
-              <br />
-              <br />
-
               <div>
                 <Form onSubmit={e => this.handleSubmit(e)}>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>Doubts</Form.Label>
-                    <Form.Control
-                      type="text" placeholder="Submit your doubts"
-                      value={this.state.textData}
-                      onChange={e => this.handleChange(e)}
-                    />
+                    <h5>Doubts</h5>
+
+                      <Form.Control
+                          type="text" placeholder="Submit your doubts"
+                          value={this.state.textData}
+                          onChange={e => this.handleChange(e)}
+                      />
+
                   </Form.Group>
-                  <Button type="submit">Submit form</Button>
+                  <Button type="submit">Submit question</Button>
 
                 </Form>
 
                 <br />
 
+              <Scrollbars style={{ width: 500, height: 200 }}>
                 <div className="comment">
-                  {this.state.comments.map(comment => <p>{comment}</p>)}
+                  {this.state.comments.reverse().map(comment => <p>{comment}</p>)}
                 </div>
+              </Scrollbars>
               </div>
 
               <div className="Translator">
