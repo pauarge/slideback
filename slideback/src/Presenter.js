@@ -102,7 +102,7 @@ class Presenter extends Component {
 
     axios.post(`${SOCKET_URL}/test-upload`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data'
+        'Ocp-Apim-Subscription-Key': 'b69042f258414c4a9974fbea3cc3f375'
       }
     }).then(response => {
       console.log(response.data);

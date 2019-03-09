@@ -6,6 +6,8 @@ var request = require('superagent');
 
 var pdfUtil = require('pdf-to-text');
 
+const fetch = require("node-fetch");
+
 
 const fs = require('fs');
 const fileType = require('file-type');
@@ -91,21 +93,35 @@ app.post('/test-upload', (request, response) => {
     try {
       const path = files.file[0].path;
 
-      var option = {from: 0, to: 10};
+      const option = {from: 0, to: 10};
       pdfUtil.pdfToText(path, option, function(err, data) {
         if (err) throw(err);
-        console.log(data); //print text
+
+        const url = "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=en&to=fr-ch";
+
+        fetch(url, {
+          method: 'POST',
+          mode: "cors",
+          headers: {
+            "Content-Type": "application/json",
+            "Ocp-Apim-Subscription-Key": "b69042f258414c4a9974fbea3cc3f375"
+            // "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: JSON.stringify([{'Text': data}]),
+        })
+          .then(resp => resp.json())
+          .then(jdata => {
+            io.emit('translation', jdata[0].translations[0].text);
+            //console.log(jdata[0].translations[0].text)
+          });
       });
 
       const buffer = fs.readFileSync(path);
-
 
       const type = fileType(buffer);
       const timestamp = Date.now().toString();
       const fileName = `${timestamp}-lg`;
       const data = await uploadFile(buffer, fileName, type);
-
-
 
       return response.status(200).send(data);
     } catch (error) {

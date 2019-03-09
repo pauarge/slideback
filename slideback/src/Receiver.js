@@ -35,6 +35,8 @@ class Receiver extends Component {
         pdfURL: url,
       })
     })
+
+    this.socket.on('translation', text => alert(text));
   }
 
   onDocumentLoadSuccess = ({numPages}) => {
@@ -117,7 +119,6 @@ class Receiver extends Component {
         <Row>
 
           <Col sm={7}>
-
 
             <Document
               file={this.state.pdfURL}
