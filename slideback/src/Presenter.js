@@ -29,6 +29,7 @@ class Presenter extends Component {
       pdfURL: undefined,
       comments: [],
       attentionScore: 100,
+      emotionScore: 100,
     };
 
     this.socket = null;
@@ -38,9 +39,11 @@ class Presenter extends Component {
     this.socket = io(SOCKET_URL, { query: 'mode=presenter' });
 
     this.socket.on('newScore', (data) => {
+      const parsed = JSON.parse(data);
       console.log('new score = ', data);
       this.setState({
-        attentionScore: data,
+        attentionScore: Math.round(parsed.attention_score),
+        emotionScore: Math.round(parsed.emotion_score),
       });
     });
 
@@ -188,12 +191,12 @@ class Presenter extends Component {
                 </Row>
                 <Row>
                   <Col sm={4}>
-                    <p>Understanding Score: </p>
+                    <p>Emotion Score: </p>
                   </Col>
                   <Col sm={8}>
                     <ProgressBar
-                      now={this.state.attentionScore}
-                      label={`${this.state.attentionScore}%`}
+                      now={this.state.emotionScore}
+                      label={`${this.state.emotionScore}%`}
                     />
                   </Col>
                 </Row>

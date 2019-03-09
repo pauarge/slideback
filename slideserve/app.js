@@ -57,28 +57,29 @@ app.get('/', (req, res) => {
 app.post('/image', (req, res) => {
   console.log('got image');
   const { b64img } = req.body;
+  computeNewScores(5);
   base64Img.img(b64img, './images', 'test', (err, filepath) => {
     const subscriptionKey = '4787f1decd6c451eb365b52b7092151c';
 
-    request
-      .post('https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=true&returnFaceAttributes=headPose')
-      // putting an actualy url like "https://www.thoughtco.com/thmb/08sd14jZzhDl5nX4Qy0xqj82nUc=/768x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-141090015-5ad4786efa6bcc0036b494de.jpg" works
-      .send({ url: 'http://sourabhs.space/test.jpg' })
-      .set('Ocp-Apim-Subscription-Key', subscriptionKey)
-      .set('Content-Type', 'application/json')
-      .then((res) => {
-        console.log(`SUCCESS!${JSON.stringify(res.body)}`);
-        computeNewScores(5);
-      });
-    request
-      .post('https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=true&returnFaceAttributes=headPose')
-      // putting an actualy url like "https://www.thoughtco.com/thmb/08sd14jZzhDl5nX4Qy0xqj82nUc=/768x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-141090015-5ad4786efa6bcc0036b494de.jpg" works
-      .send({ url: 'http://sourabhs.space/test.jpg' })
-      .set('Ocp-Apim-Subscription-Key', subscriptionKey)
-      .set('Content-Type', 'application/json')
-      .then((res) => {
-        console.log(`SUCCESS!${JSON.stringify(res.body)}`);
-      });
+    // request
+    //   .post('https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=true&returnFaceAttributes=headPose')
+    //   // putting an actualy url like "https://www.thoughtco.com/thmb/08sd14jZzhDl5nX4Qy0xqj82nUc=/768x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-141090015-5ad4786efa6bcc0036b494de.jpg" works
+    //   .send({ url: 'http://sourabhs.space/test.jpg' })
+    //   .set('Ocp-Apim-Subscription-Key', subscriptionKey)
+    //   .set('Content-Type', 'application/json')
+    //   .then((res) => {
+    //     console.log(`SUCCESS!${JSON.stringify(res.body)}`);
+    //     computeNewScores(5);
+    //   });
+    // request
+    //   .post('https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=true&returnFaceAttributes=headPose')
+    //   // putting an actualy url like "https://www.thoughtco.com/thmb/08sd14jZzhDl5nX4Qy0xqj82nUc=/768x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-141090015-5ad4786efa6bcc0036b494de.jpg" works
+    //   .send({ url: 'http://sourabhs.space/test.jpg' })
+    //   .set('Ocp-Apim-Subscription-Key', subscriptionKey)
+    //   .set('Content-Type', 'application/json')
+    //   .then((res) => {
+    //     console.log(`SUCCESS!${JSON.stringify(res.body)}`);
+    //   });
   });
   res.json('ok');
 });
@@ -191,15 +192,18 @@ function computeNewScores(new_data) {
   //  	metrics[data[index].faceID].emotion.push(data[index].emotion);
   // }
 
-  const attention_score = 50;
-  const emotion_score = 50;
+  const attention_score = Math.random() * 100;
+  const emotion_score = Math.random() * 100;
 
   // TODO:
   // average on all users -> attention_score = variance of last 10 ["faceAttributes"]["headPose"]["yaw"] --> high variance = bad
   // average on all users -> emotion_score = neutral + happiness +surprise - fear - anger
 
-  const new_scores = (attention_score, emotion_score);
-  io.emit('newScore', new_scores);
+  const new_scores = {
+    attention_score,
+    emotion_score
+  };
+  io.emit('newScore', JSON.stringify(new_scores));
 }
 
 
