@@ -3,10 +3,14 @@
   "version": "0.0.1",
   "description": "my first socket.io app",
   "dependencies": {
+    "base64-img": "^1.0.4",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.5",
     "express": "^4.16.4",
-    "socket.io": "^2.2.0"
+    "socket.io": "^2.2.0",
+    "superagent": "^4.1.0"
   },
   "scripts": {
-  	"start": "node app.js"
+    "start": "node app.js"
   }
 }

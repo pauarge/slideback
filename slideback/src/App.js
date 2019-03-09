@@ -11,9 +11,9 @@ class App extends Component {
     super(props);
 
     this.state = {
-      displayPresenter: true,
+      displayPresenter: false,
       displayReceiver: false,
-      displayVideo: false,
+      displayVideo: true,
     };
   }
 
