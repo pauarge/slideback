@@ -25,7 +25,13 @@ class Video extends React.Component {
     this.setState({
       imageData: imageSrc
     })
-    base64Img.img(this.state.imageData, './', 'test', function(err, filepath) {});
+     request
+   .post('http://localhost:8081/image')
+   .send({ "b64img": imageSrc })
+   .set('Content-Type', 'application/json')
+   .then(res => {
+      console.log(res)
+   });
     // this.processImage()
   };
 
