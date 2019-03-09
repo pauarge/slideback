@@ -1,1 +1,1 @@
-exports.SOCKET_URL = 'http://fc15dc9a.ngrok.io';
+exports.SOCKET_URL = 'http://localhost:8081';
