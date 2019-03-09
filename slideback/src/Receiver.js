@@ -119,6 +119,32 @@ class Receiver extends Component {
               >
                 <Page pageNumber={pageNumber} />
               </Document>
+
+              <div>
+                <br></br>
+              </div>
+              <div className="Translator">
+                <Row>
+                  <Col sm={4}>
+                    <DropdownButton
+                        as={ButtonGroup}
+                        title="Select Language"
+                        id="bg-nested-dropdown"
+                        onSelect={eventKey => this.translate(eventKey)}
+                    >
+                      <Dropdown.Item eventKey="de">German</Dropdown.Item>
+                      <Dropdown.Item eventKey="fr-ch"> French</Dropdown.Item>
+                      <Dropdown.Item eventKey="it"> Italian</Dropdown.Item>
+                      <Dropdown.Item eventKey="es"> Spanish</Dropdown.Item>
+                      <Dropdown.Item eventKey="ja"> Japanese</Dropdown.Item>
+                    </DropdownButton>
+                  </Col>
+                </Row>
+              </div>
+
+              <div>
+                <p>{this.state.translated}</p>
+              </div>
             </Col>
             <Col sm={5}>
 
@@ -147,28 +173,7 @@ class Receiver extends Component {
               </Scrollbars>
               </div>
 
-              <div className="Translator">
-                <Row>
-                  <Col sm={4}>
-                    <DropdownButton
-                      as={ButtonGroup}
-                      title="Select Language"
-                      id="bg-nested-dropdown"
-                      onSelect={eventKey => this.translate(eventKey)}
-                    >
-                      <Dropdown.Item eventKey="de">German</Dropdown.Item>
-                      <Dropdown.Item eventKey="fr-ch"> French</Dropdown.Item>
-                      <Dropdown.Item eventKey="it"> Italian</Dropdown.Item>
-                      <Dropdown.Item eventKey="es"> Spanish</Dropdown.Item>
-                      <Dropdown.Item eventKey="ja"> Japanese</Dropdown.Item>
-                    </DropdownButton>
-                  </Col>
-                </Row>
-              </div>
 
-              <div>
-                <p>{this.state.translated}</p>
-              </div>
 
               <Video />
             </Col>

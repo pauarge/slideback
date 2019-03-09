@@ -14,6 +14,7 @@ import io from 'socket.io-client';
 import axios from 'axios';
 
 import { SOCKET_URL } from './config';
+import {Scrollbars} from "react-custom-scrollbars";
 
 
 class Presenter extends Component {
@@ -228,9 +229,11 @@ class Presenter extends Component {
               <div>
                 <br/>
                   <h5> Students comments </h5>
-                <div className="doubts">
-                  {reversed.map(comment => <p>{comment}</p>)}
-                </div>
+                <Scrollbars style={{ width: 500, height: 200 }}>
+                  <div className="comment">
+                    {reversed.map(comment => <p>{comment}</p>)}
+                  </div>
+                </Scrollbars>
               </div>
 
             </Col>
