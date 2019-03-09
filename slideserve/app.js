@@ -21,7 +21,7 @@ app.use(bodyParser.json({limit: '64mb'}));
 app.use(cors());
 
 
-require('dotenv').config(); // Configure dotenv to load in the .env file
+// require('dotenv').config(); // Configure dotenv to load in the .env file
 
 // Configure aws with your accessKeyId and your secretAccessKey
 aws.config.update({
@@ -60,7 +60,7 @@ app.post('/image', (req, res) => {
        request
          .post('https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=true&returnFaceAttributes=headPose')
          // putting an actualy url like "https://www.thoughtco.com/thmb/08sd14jZzhDl5nX4Qy0xqj82nUc=/768x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-141090015-5ad4786efa6bcc0036b494de.jpg" works
-         .send({ "url": ."http://sourabhs.space/test.jpg" })
+         .send({ "url": "http://sourabhs.space/test.jpg" })
          .set('Ocp-Apim-Subscription-Key', subscriptionKey)
          .set('Content-Type', 'application/json')
          .then(res => {
@@ -113,8 +113,7 @@ io.on('connection', function (socket) {
   socket.on('newDoc', url => {
     socket.broadcast.emit('newDoc', url);
   })
-
-const socket = io('http://localhost:8000');
+});
 
 
 function computeNewScores(list_of_scores) {
@@ -126,22 +125,22 @@ function computeNewScores(list_of_scores) {
 }
 
 
-io.on('connection', function(socket){
-	console.log("Query: ", socket.handshake.query);
-	if (socket.handshake.query.mode == "presenter") {
-        presenter = socket;
-        console.log('presenter connected');
-    }
-    else{
-    	students.push(socket);
-    	console.log('a student connected');
-    }
-
-  	socket.on('pageChange', page => {
-  		console.log('pageChange');
-  		socket.broadcast.emit('pageChange', page);
-  	})
-});
+// io.on('connection', function(socket){
+// 	console.log("Query: ", socket.handshake.query);
+// 	if (socket.handshake.query.mode == "presenter") {
+//         presenter = socket;
+//         console.log('presenter connected');
+//     }
+//     else{
+//     	students.push(socket);
+//     	console.log('a student connected');
+//     }
+//
+//   	socket.on('pageChange', page => {
+//   		console.log('pageChange');
+//   		socket.broadcast.emit('pageChange', page);
+//   	})
+// });
 
 http.listen(8081, function () {
   console.log('listening on *:8081');
