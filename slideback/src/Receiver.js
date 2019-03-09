@@ -131,10 +131,6 @@ class Receiver extends Component {
             <br></br>
             <br></br>
             <br></br>
-            <br></br>
-            <Button onclick={() => this.translate()}>halo</Button>
-
-            <br></br>
 
             <div>
               <Form onSubmit={e => this.handleSubmit(e)}>

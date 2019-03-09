@@ -25,8 +25,6 @@ class Presenter extends Component {
       pageNumber: 1,
       alertFirst: false,
       alertLast: false,
-      success: false,
-      url: "",
       pdfURL: null,
       comments: [],
       attentionScore: 100
