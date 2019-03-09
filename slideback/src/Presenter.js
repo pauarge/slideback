@@ -124,7 +124,7 @@ class Presenter extends Component {
     const now = this.state.attentionScore;
 
     return (
-        <Container>
+        <Container fluid={true}>
           <Row>
 
           <Col sm={7}>

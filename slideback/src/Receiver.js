@@ -113,7 +113,7 @@ class Receiver extends Component {
     const { pageNumber, numPages } = this.state;
 
     return (
-        <Container>
+        <Container fluid={true}>
           <Row>
 
             <Col sm={7}>
@@ -131,9 +131,6 @@ class Receiver extends Component {
               <br></br>
               <br></br>
               <br></br>
-              <br></br>
-              <Button onclick={() => this.translate()}>halo</Button>
-
               <br></br>
 
               <div>
