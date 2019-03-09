@@ -36,12 +36,12 @@ class Presenter extends Component {
   componentDidMount() {
     this.socket = io(SOCKET_URL, { query: 'mode=presenter' });
 
-    // this.socket.on('newScore', function (data) {
-    //   console.log('new score = ', data);
-    //   this.setState({
-    //     attentionScore: data,
-    //   });
-    // });
+    this.socket.on('newScore', function (data) {
+      console.log('new score = ', data);
+      this.setState({
+        attentionScore: data,
+      });
+    });
 
     this.socket.on('newCommentServer', (comment) => {
       const comments = this.state.comments;
@@ -129,7 +129,6 @@ class Presenter extends Component {
 
             <Col sm={7}>
 
-
               <Document
                 file={this.state.pdfURL}
                 onLoadSuccess={this.onDocumentLoadSuccess}
@@ -163,7 +162,6 @@ class Presenter extends Component {
                 ) : ''
                         }
 
-
               {this.state.alertLast
                 ? (
                   <Alert variant="info last">
@@ -178,13 +176,24 @@ class Presenter extends Component {
               <div className="Satisfaction bar">
                 <Row>
                   <Col sm={4}>
-                    <p>Satisfaction level: </p>
+                    <p>Attention Score: </p>
                   </Col>
                   <Col sm={8}>
                     <ProgressBar
-                        now={this.state.pageNumber * this.state.numPages}
-                        label={`${this.state.pageNumber * this.state.numPages}%`}
+                        now={this.state.attentionScore}
+                        label={`${this.state.attentionScore}%`}
                       />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col sm={4}>
+                    <p>Understanding Score: </p>
+                  </Col>
+                  <Col sm={8}>
+                    <ProgressBar
+                      now={this.state.attentionScore}
+                      label={`${this.state.attentionScore}%`}
+                    />
                   </Col>
                 </Row>
               </div>
