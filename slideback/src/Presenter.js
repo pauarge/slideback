@@ -1,10 +1,19 @@
 import React, {Component} from 'react';
 import {Document, Page} from 'react-pdf';
-import {Button, ButtonToolbar, Alert, ProgressBar, Container, Row, Col, InputGroup, FormControl, ButtonGroup} from "react-bootstrap";
+import {
+  Button,
+  ButtonToolbar,
+  Alert,
+  ProgressBar,
+  Container,
+  Row,
+  Col,
+  ButtonGroup
+} from "react-bootstrap";
 import io from "socket.io-client";
 import axios from 'axios';
 
-import { SOCKET_URL } from './config';
+import {SOCKET_URL} from './config';
 
 
 class Presenter extends Component {
@@ -16,8 +25,8 @@ class Presenter extends Component {
       pageNumber: 1,
       alertFirst: false,
       alertLast: false,
-      success : false,
-      url : "",
+      success: false,
+      url: "",
       pdfURL: null,
       comments: [],
       attentionScore: 100
@@ -88,11 +97,6 @@ class Presenter extends Component {
     }
   };
 
-  handleChange = (ev) => {
-    this.setState({success: false, url : ""});
-
-  }
-
   submitFile = (event) => {
     event.preventDefault();
     const formData = new FormData();
@@ -113,26 +117,26 @@ class Presenter extends Component {
       console.log(error);
       // handle your error
     });
-  }
+  };
 
   handleFileUpload = (event) => {
     this.setState({file: event.target.files});
-  }
+  };
 
   render() {
     const {pageNumber, numPages} = this.state;
     const now = this.state.attentionScore;
 
     return (
-        <Container fluid={true}>
-          <Row>
+      <Container>
+        <Row>
 
           <Col sm={7}>
 
 
             <Document
-                file={this.state.pdfURL}
-                onLoadSuccess={this.onDocumentLoadSuccess}
+              file={this.state.pdfURL}
+              onLoadSuccess={this.onDocumentLoadSuccess}
             >
               <Page pageNumber={pageNumber}/>
             </Document>
@@ -160,18 +164,18 @@ class Presenter extends Component {
 
 
             {this.state.alertFirst ?
-                (<Alert defaultShow={this.state.alertFirst} variant="info first">
-                  <Alert.Heading>You are already in the first page of the document</Alert.Heading>
-                  <p>To continue click of 'Prev'</p>
-                </Alert>) : ''
+              (<Alert defaultShow={this.state.alertFirst} variant="info first">
+                <Alert.Heading>You are already in the first page of the document</Alert.Heading>
+                <p>To continue click of 'Prev'</p>
+              </Alert>) : ''
             }
 
 
             {this.state.alertLast ?
-                (<Alert variant="info last">
-                  <Alert.Heading>You are already in the last page of the document</Alert.Heading>
-                  <p>To continue click of 'Next'</p>
-                </Alert>) : ''
+              (<Alert variant="info last">
+                <Alert.Heading>You are already in the last page of the document</Alert.Heading>
+                <p>To continue click of 'Next'</p>
+              </Alert>) : ''
             }
 
             <br></br>
@@ -182,7 +186,8 @@ class Presenter extends Component {
                   <p>Satisfaction level: </p>
                 </Col>
                 <Col sm={8}>
-                  <ProgressBar now={this.state.pageNumber * this.state.numPages} label={`${this.state.pageNumber * this.state.numPages}%`} />
+                  <ProgressBar now={this.state.pageNumber * this.state.numPages}
+                               label={`${this.state.pageNumber * this.state.numPages}%`}/>
                 </Col>
               </Row>
             </div>
@@ -193,25 +198,25 @@ class Presenter extends Component {
             <div className="upload-document">
               <p>Upload your new presentation: </p>
               <form onSubmit={this.submitFile}>
-            <div className="input-group">
+                <div className="input-group">
 
-              <div className="custom-file">
-                <input
-                    type="file"
-                    className="custom-file-input"
-                    id="inputGroupFile01"
-                    aria-describedby="inputGroupFileAddon01"
-                    onChange={this.handleFileUpload}
-                />
-                <label className="custom-file-label" htmlFor="inputGroupFile01">
-                  Choose file
-                </label>
-              </div>
+                  <div className="custom-file">
+                    <input
+                      type="file"
+                      className="custom-file-input"
+                      id="inputGroupFile01"
+                      aria-describedby="inputGroupFileAddon01"
+                      onChange={this.handleFileUpload}
+                    />
+                    <label className="custom-file-label" htmlFor="inputGroupFile01">
+                      Choose file
+                    </label>
+                  </div>
 
-              <div className="input-group-prepend">
-                <button className="input-group-text" id="inputGroupFileAddon01">Upload</button>
-              </div>
-            </div>
+                  <div className="input-group-prepend">
+                    <button className="input-group-text" id="inputGroupFileAddon01">Upload</button>
+                  </div>
+                </div>
               </form>
             </div>
 
@@ -224,9 +229,8 @@ class Presenter extends Component {
             </div>
 
           </Col>
-          </Row>
-        </Container>
-
+        </Row>
+      </Container>
 
 
     );
