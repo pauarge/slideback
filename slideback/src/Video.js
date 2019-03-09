@@ -2,6 +2,8 @@ import React from 'react';
 import Webcam from 'react-webcam';
 import request from 'superagent';
 
+import { Button } from 'react-bootstrap';
+
 
 class Video extends React.Component {
   state = {
@@ -9,7 +11,6 @@ class Video extends React.Component {
     intervalID: null,
     analysisUrl: null,
   }
-
 
   setRef = (webcam) => {
     this.webcam = webcam;
@@ -80,7 +81,7 @@ class Video extends React.Component {
         />
 
         <div className="button-container">
-          <button onClick={this.capture}> capture</button>
+          <Button onClick={this.capture}>Capture</Button>
         </div>
 
         {this.state.imageData

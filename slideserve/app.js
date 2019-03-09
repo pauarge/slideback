@@ -1,32 +1,28 @@
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var base64Img = require('base64-img');
-var request = require('superagent');
+const app = require('express')();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+const base64Img = require('base64-img');
+const request = require('superagent');
 
+const extract = require('pdf-text-extract');
 
-var extract = require('pdf-text-extract')
-
-const fetch = require("node-fetch");
-const pdf_options = {max: 1}
-
+const fetch = require('node-fetch');
 
 const fs = require('fs');
 const fileType = require('file-type');
 const bluebird = require('bluebird');
 const multiparty = require('multiparty');
 
-var metrics = {}
+const metrics = {};
 
-var students = [];
-var presenter = null;
+const presenter = null;
 
-var cors = require('cors');
-var bodyParser = require('body-parser');
-var aws = require('aws-sdk');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const aws = require('aws-sdk');
 
 app.use(cors());
-app.use(bodyParser.json({limit: '64mb'}));
+app.use(bodyParser.json({ limit: '64mb' }));
 
 
 require('dotenv').config(); // Configure dotenv to load in the .env file
@@ -35,8 +31,8 @@ require('dotenv').config(); // Configure dotenv to load in the .env file
 aws.config.update({
   region: 'eu-central-1', // Put your aws region here
   accessKeyId: process.env.AWSAccessKeyId,
-  secretAccessKey: process.env.AWSSecretKey
-})
+  secretAccessKey: process.env.AWSSecretKey,
+});
 
 aws.config.setPromisesDependency(bluebird);
 
@@ -49,43 +45,40 @@ const uploadFile = (buffer, name, type) => {
     Body: buffer,
     Bucket: 'slideback-bucket',
     ContentType: type.mime,
-    Key: `${name}.${type.ext}`
+    Key: `${name}.${type.ext}`,
   };
   return s3.upload(params).promise();
 };
 
 app.get('/', (req, res) => {
   res.json('ok');
-})
+});
 
 app.post('/image', (req, res) => {
   console.log('got image');
-  const b64img = req.body.b64img;
-  base64Img.img(b64img, './images', 'test', function (err, filepath) {
-
-    var subscriptionKey = "4787f1decd6c451eb365b52b7092151c";
+  const { b64img } = req.body;
+  base64Img.img(b64img, './images', 'test', (err, filepath) => {
+    const subscriptionKey = '4787f1decd6c451eb365b52b7092151c';
 
     request
       .post('https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=true&returnFaceAttributes=headPose')
       // putting an actualy url like "https://www.thoughtco.com/thmb/08sd14jZzhDl5nX4Qy0xqj82nUc=/768x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-141090015-5ad4786efa6bcc0036b494de.jpg" works
-      .send({"url": "http://sourabhs.space/test.jpg"})
+      .send({ url: 'http://sourabhs.space/test.jpg' })
       .set('Ocp-Apim-Subscription-Key', subscriptionKey)
       .set('Content-Type', 'application/json')
-      .then(res => {
-        console.log('SUCCESS!' + JSON.stringify(res.body));
+      .then((res) => {
+        console.log(`SUCCESS!${JSON.stringify(res.body)}`);
         computeNewScores(5);
-
       });
     request
       .post('https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=true&returnFaceAttributes=headPose')
       // putting an actualy url like "https://www.thoughtco.com/thmb/08sd14jZzhDl5nX4Qy0xqj82nUc=/768x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-141090015-5ad4786efa6bcc0036b494de.jpg" works
-      .send({"url": "http://sourabhs.space/test.jpg"})
+      .send({ url: 'http://sourabhs.space/test.jpg' })
       .set('Ocp-Apim-Subscription-Key', subscriptionKey)
       .set('Content-Type', 'application/json')
-      .then(res => {
-        console.log('SUCCESS!' + JSON.stringify(res.body));
+      .then((res) => {
+        console.log(`SUCCESS!${JSON.stringify(res.body)}`);
       });
-
   });
   res.json('ok');
 });
@@ -95,14 +88,14 @@ app.post('/upload', (request, response) => {
   form.parse(request, async (error, fields, files) => {
     if (error) throw new Error(error);
     try {
-      const path = files.file[0].path;
+      const { path } = files.file[0];
 
-      extract(path, function (err, pages) {
+      extract(path, (err, pages) => {
         if (err) {
-          console.dir(err)
-          return
+          console.dir(err);
+          return;
         }
-        io.emit('newText', JSON.stringify(pages))
+        io.emit('newText', JSON.stringify(pages));
       });
 
       const buffer = fs.readFileSync(path);
@@ -124,41 +117,40 @@ app.post('/upload', (request, response) => {
 app.post('/translate', (request, response) => {
   const url = `https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=en&to=${request.body.lang}`;
 
-        fetch(url, {
-          method: 'POST',
-          mode: "cors",
-          headers: {
-            "Content-Type": "application/json",
-            "Ocp-Apim-Subscription-Key": "b69042f258414c4a9974fbea3cc3f375"
-            // "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: JSON.stringify([{'Text': request.body.text}]),
-        })
-          .then(resp => resp.json())
-          .then(jdata => {
-            response.json({'text': jdata[0].translations[0].text})
-            //console.log(jdata[0].translations[0].text)
-          });
-  });
+  fetch(url, {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      'Ocp-Apim-Subscription-Key': 'b69042f258414c4a9974fbea3cc3f375',
+      // "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: JSON.stringify([{ Text: request.body.text }]),
+  })
+    .then(resp => resp.json())
+    .then((jdata) => {
+      response.json({ text: jdata[0].translations[0].text });
+      // console.log(jdata[0].translations[0].text)
+    });
+});
 
 
-
-io.on('connection', function (socket) {
-  console.log("Query: ", socket.handshake.query);
+io.on('connection', (socket) => {
+  console.log('Query: ', socket.handshake.query);
   console.log('a user connected');
 
-  socket.on('pageChange', page => {
+  socket.on('pageChange', (page) => {
     console.log('pageChange');
     socket.broadcast.emit('pageChange', page);
-  })
+  });
 
-  socket.on('newDoc', url => {
+  socket.on('newDoc', (url) => {
     socket.broadcast.emit('newDoc', url);
-  })
+  });
 
-  socket.on('newComment', comment => {
+  socket.on('newComment', (comment) => {
     socket.broadcast.emit('newCommentServer', comment);
-  })
+  });
 });
 
 /** Reference to API response JSON
@@ -181,36 +173,33 @@ io.on('connection', function (socket) {
       "anger": 0.0,
       "contempt": 0.0,
       "disgust": 0.0,
-      "fear": 0.0, 	
+      "fear": 0.0,
       "happiness": 0.014,
       "neutral": 0.985,
       "sadness": 0.0,
       "surprise": 0.0
     }
   }
-**/
+* */
 
 function computeNewScores(new_data) {
-  //do computation
-  	var index;
-	data = JSON.parse(new_data);
-	for (index = 0; index < data.length; ++index) {
-    	metrics[data[index]["faceID"]]["faceAttributes"].push(data[index]["faceAttributes"])
-    	metrics[data[index]["faceID"]]["emotion"].push(data[index]["emotion"])
-	}
+  // do computation
+  // let index;
+  // let data = JSON.parse(new_data);
+  // for (index = 0; index < data.length; ++index) {
+  //   	metrics[data[index].faceID].faceAttributes.push(data[index].faceAttributes);
+  //  	metrics[data[index].faceID].emotion.push(data[index].emotion);
+  // }
 
-	let attention_score = 50;
-	let emotion_score = 50;
+  const attention_score = 50;
+  const emotion_score = 50;
 
-	//TODO:
-	// average on all users -> attention_score = variance of last 10 ["faceAttributes"]["headPose"]["yaw"] --> high variance = bad
-	// average on all users -> emotion_score = neutral + happiness +surprise - fear - anger  
- 
+  // TODO:
+  // average on all users -> attention_score = variance of last 10 ["faceAttributes"]["headPose"]["yaw"] --> high variance = bad
+  // average on all users -> emotion_score = neutral + happiness +surprise - fear - anger
 
-  var new_scores = (attention_score,emotion_score)
-  if (new_scores != list_ofscores) {
-    presenter.emit('newScore', new_scores)
-  }
+  const new_scores = (attention_score, emotion_score);
+  io.emit('newScore', new_scores);
 }
 
 
@@ -224,13 +213,8 @@ function computeNewScores(new_data) {
 //     	students.push(socket);
 //     	console.log('a student connected');
 //     }
-//
-//   	socket.on('pageChange', page => {
-//   		console.log('pageChange');
-//   		socket.broadcast.emit('pageChange', page);
-//   	})
 // });
 
-http.listen(8081, function () {
+http.listen(8081, () => {
   console.log('listening on *:8081');
 });

@@ -9,6 +9,8 @@ import {
 } from 'react-bootstrap';
 import { SOCKET_URL } from './config';
 
+import Video from './Video';
+
 class Receiver extends Component {
   constructor(props) {
     super(props);
@@ -167,6 +169,7 @@ class Receiver extends Component {
                 <p>{this.state.translated}</p>
               </div>
 
+              <Video />
             </Col>
           </Row>
         </Container>

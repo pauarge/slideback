@@ -4,7 +4,6 @@ import './App.css';
 
 import Presenter from './Presenter';
 import Receiver from './Receiver';
-import Video from './Video';
 
 class App extends Component {
   constructor(props) {
@@ -13,7 +12,6 @@ class App extends Component {
     this.state = {
       displayPresenter: true,
       displayReceiver: false,
-      displayVideo: false,
     };
   }
 
@@ -22,23 +20,14 @@ class App extends Component {
       this.setState({
         displayPresenter: true,
         displayReceiver: false,
-        displayVideo: false,
       });
     } else if (page === 'receiver') {
       this.setState({
         displayPresenter: false,
         displayReceiver: true,
-        displayVideo: false,
-      });
-    } else {
-      this.setState({
-        displayPresenter: false,
-        displayReceiver: false,
-        displayVideo: true,
       });
     }
   }
-
 
   render() {
     return (
@@ -53,7 +42,6 @@ class App extends Component {
               <Nav className="mr-auto">
                 <Nav.Link eventKey={1} onClick={() => this.changePage('presenter')}>Presenter</Nav.Link>
                 <Nav.Link eventKey={2} onClick={() => this.changePage('receiver')}>Receiver</Nav.Link>
-                <Nav.Link eventKey={3} onClick={() => this.changePage('video')}>Video</Nav.Link>
               </Nav>
             </Navbar.Collapse>
           </Navbar>
@@ -64,7 +52,6 @@ class App extends Component {
           <Container fluid>
             {this.state.displayPresenter && <Presenter />}
             {this.state.displayReceiver && <Receiver />}
-            {this.state.displayVideo && <Video />}
           </Container>
         </div>
       </div>
