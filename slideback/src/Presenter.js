@@ -6,6 +6,8 @@ import axios from 'axios';
 
 import { SOCKET_URL } from './config';
 
+import Comments from './Comments'
+
 
 class Presenter extends Component {
   constructor(props) {
@@ -16,10 +18,11 @@ class Presenter extends Component {
       pageNumber: 1,
       alertFirst: false,
       alertLast: false,
-      comments: [],
       success : false,
       url : "",
       pdfURL: null,
+      comments: [],
+      attentionScore: 100
     };
 
     this.socket = null;
@@ -27,6 +30,13 @@ class Presenter extends Component {
 
   componentDidMount() {
     this.socket = io(SOCKET_URL, {query: "mode=presenter"});
+
+    this.socket.on('newScore', function (data) {
+      console.log('new score = ', data);
+      this.setState({
+        attentionScore: data
+      })
+    });
 
     this.socket.on('newComment', comment => {
       const comments = this.state.comments
@@ -112,7 +122,7 @@ class Presenter extends Component {
 
   render() {
     const {pageNumber, numPages} = this.state;
-    const now = 60;
+    const now = this.state.attentionScore;
 
     return (
         <Container>
