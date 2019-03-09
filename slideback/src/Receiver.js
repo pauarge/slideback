@@ -13,7 +13,7 @@ class Receiver extends Component {
     super(props);
 
     this.state = {
-      numPages: null,
+      numPages: 'en',
       pageNumber: 1,
       pdfURL: null,
       comments: [],
@@ -32,6 +32,10 @@ class Receiver extends Component {
       console.log('Current page', page);
       this.setState({
         pageNumber: page,
+      }, () => {
+        if (this.state.toLan !== 'en') {
+          this.translate(this.state.toLan);
+        }
       });
     });
 
@@ -77,8 +81,6 @@ class Receiver extends Component {
     }
 
     translate(language) {
-      console.log(this.state.toTranslate);
-
       this.setState({ toLan: language });
 
       fetch(`${SOCKET_URL}/translate`, {

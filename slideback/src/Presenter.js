@@ -100,7 +100,7 @@ class Presenter extends Component {
       const formData = new FormData();
       formData.append('file', this.state.file[0]);
 
-      axios.post(`${SOCKET_URL}/test-upload`, formData)
+      axios.post(`${SOCKET_URL}/upload`, formData)
         .then((response) => {
           console.log(response.data);
           this.setState({
@@ -120,7 +120,7 @@ class Presenter extends Component {
 
     render() {
       const { pageNumber, numPages } = this.state;
-      const now = this.state.attentionScore;
+      // const now = this.state.attentionScore;
 
       return (
         <Container fluid>
