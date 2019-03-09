@@ -40,24 +40,23 @@ class App extends Component {
   }
 
 
-
   render() {
     return (
       <div className="App">
         <div className="navbar">
 
-              <Navbar fixed="top" bg="light" expand="lg">
-                <Navbar.Brand href="#home">SlideBack</Navbar.Brand>
-                <Navbar.Text>                        </Navbar.Text>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                <Navbar.Collapse id="basic-navbar-nav">
-                  <Nav className="mr-auto">
-                    <Nav.Link eventKey={1} onClick={() => this.changePage('presenter')}>Presenter</Nav.Link>
-                    <Nav.Link eventKey={2} onClick={() => this.changePage('receiver')}>Receiver</Nav.Link>
-                    <Nav.Link eventKey={3} onClick={() => this.changePage('video')}>Video</Nav.Link>
-                  </Nav>
-                </Navbar.Collapse>
-              </Navbar>
+          <Navbar fixed="top" bg="light" expand="lg">
+            <Navbar.Brand href="#home">SlideBack</Navbar.Brand>
+            <Navbar.Text> </Navbar.Text>
+            <Navbar.Toggle aria-controls="basic-navbar-nav"/>
+            <Navbar.Collapse id="basic-navbar-nav">
+              <Nav className="mr-auto">
+                <Nav.Link eventKey={1} onClick={() => this.changePage('presenter')}>Presenter</Nav.Link>
+                <Nav.Link eventKey={2} onClick={() => this.changePage('receiver')}>Receiver</Nav.Link>
+                <Nav.Link eventKey={3} onClick={() => this.changePage('video')}>Video</Nav.Link>
+              </Nav>
+            </Navbar.Collapse>
+          </Navbar>
         </div>
 
 
