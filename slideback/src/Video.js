@@ -9,6 +9,8 @@ class Video extends React.Component {
     imageSave: false
   }
 
+  intervalID = null
+
   setRef = (webcam) => {
     this.webcam = webcam;
   }  
@@ -21,11 +23,14 @@ class Video extends React.Component {
   };
 
 
+  componentDidMount() {
+    this.intervalID = setInterval(
+      () => this.capture(),
+      1000
+    );
 
-    // this.intervalID = setInterval(
-    //   () => this.tick(),
-    //   1000
-    // );
+
+  }
 
 
   render() {
