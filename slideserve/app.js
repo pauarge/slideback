@@ -3,9 +3,11 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var base64Img = require('base64-img');
 
-
+var cors = require('cors');
 var bodyParser = require('body-parser');
-app.use( bodyParser.json() );       // to support JSON-encoded bodies
+
+app.use(bodyParser.json());
+app.use(cors());
 
 app.get('/', (req, res) => {
 	res.json('ok');
