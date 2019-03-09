@@ -2,6 +2,10 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+app.get('/', (req, res) => {
+	res.json('ok');
+})
+
 io.on('connection', function(socket){
 	console.log("Query: ", socket.handshake.query);
   	console.log('a user connected');
@@ -12,6 +16,6 @@ io.on('connection', function(socket){
   	})
 });
 
-http.listen(4000, function(){
-  	console.log('listening on *:4000');
+http.listen(8081, function(){
+  	console.log('listening on *:8081');
 });
