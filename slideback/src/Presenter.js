@@ -100,22 +100,19 @@ class Presenter extends Component {
         const formData = new FormData();
         formData.append('file', this.state.file[0]);
 
-        axios.post(`${SOCKET_URL}/upload`, formData, {
-            headers: {
-                'Ocp-Apim-Subscription-Key': 'b69042f258414c4a9974fbea3cc3f375'
-            }
-        }).then(response => {
-            console.log(response.data);
-            this.setState({
-                pdfURL: response.data.Location,
-            })
-            this.socket.emit('newDoc', response.data.Location);
-            // handle your response;
-        }).catch(error => {
-            console.log(error);
-            // handle your error
-        });
-    };
+    axios.post(`${SOCKET_URL}/test-upload`, formData)
+      .then(response => {
+      console.log(response.data);
+      this.setState({
+        pdfURL: response.data.Location,
+      })
+      this.socket.emit('newDoc', response.data.Location);
+      // handle your response;
+    }).catch(error => {
+      console.log(error);
+      // handle your error
+    });
+  };
 
     handleFileUpload = (event) => {
         this.setState({file: event.target.files});
