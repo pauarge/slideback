@@ -4,7 +4,7 @@ import io from 'socket.io-client';
 import {Document, Page} from "react-pdf";
 
 import {SOCKET_URL} from './config';
-import {Button, Col, Container, Form, ProgressBar, Row} from "react-bootstrap";
+import {Button, ButtonGroup, Col, Container, DropdownButton, Form, Dropdown, Row} from "react-bootstrap";
 
 class Receiver extends Component {
   constructor(props) {
@@ -14,7 +14,9 @@ class Receiver extends Component {
       numPages: null,
       pageNumber: 1,
       pdfURL: null,
-      comments: []
+      comments: [],
+      toLan: 'en',
+      translated: ''
     };
 
     this.socket = null;
@@ -36,62 +38,15 @@ class Receiver extends Component {
       })
     })
 
-    this.socket.on('translation', text => alert(text));
+    this.socket.on('translation', text => {
+      this.setState({translated:text})
+    });
   }
 
   onDocumentLoadSuccess = ({numPages}) => {
     this.setState({numPages});
   };
 
-
-  async translate() {
-
-    // Imports the Google Cloud client libraries
-    //const vision = require('@google-cloud/vision').v1;
-
-// Creates a client
-    //const client = new vision.ImageAnnotatorClient();
-
-    /**
-     * TODO(developer): Uncomment the following lines before running the sample.
-     */
-// Bucket where the file resides
-    //const bucketName = 'my-bucket';
-// Path to PDF file within bucket
-    //const fileName = 'public/Report_hw2_bolon.pdf';
-
-    // const gcsSourceUri = `gs://${bucketName}/${fileName}`;
-    // const gcsDestinationUri = `gs://${bucketName}/${fileName}.json`;
-    //
-    // const inputConfig = {
-    //   // Supported mime_types are: 'application/pdf' and 'image/tiff'
-    //   mimeType: 'application/pdf',
-    //   gcsSource: {
-    //     uri: gcsSourceUri,
-    //   },
-    // };
-    // const outputConfig = {
-    //   gcsDestination: {
-    //     uri: gcsDestinationUri,
-    //   },
-    // };
-    // const features = [{type: 'DOCUMENT_TEXT_DETECTION'}];
-    // const request = {
-    //   requests: [
-    //     {
-    //       inputConfig: inputConfig,
-    //       features: features,
-    //       outputConfig: outputConfig,
-    //     },
-    //   ],
-    // };
-    //
-    // const [operation] = await client.asyncBatchAnnotateFiles(request);
-    // const [filesResponse] = await operation.promise();
-    // const destinationUri =
-    //     filesResponse.responses[0].outputConfig.gcsDestination.uri;
-    // console.log('Json saved to: ' + destinationUri);
-  }
 
 
   handleChange(event) {
@@ -111,6 +66,11 @@ class Receiver extends Component {
     this.socket.emit('newComment', this.state.textData);
   }
 
+  translate(language){
+    this.setState({toLan: language})
+    console.log(this.state.toLan)
+
+  }
   render() {
     const {pageNumber, numPages} = this.state;
 
@@ -153,6 +113,27 @@ class Receiver extends Component {
               </div>
             </div>
 
+            <div className='Translator'>
+              <Row>
+              <Col sm={4}><p> Select language:</p></Col>
+              <Col sm={4}>
+                <DropdownButton as={ButtonGroup} title="Dropdown" id="bg-nested-dropdown" onSelect={(eventKey) => this.translate(eventKey)}>
+                  <Dropdown.Item eventKey="de">German</Dropdown.Item>
+                  <Dropdown.Item eventKey="fr-ch"> French</Dropdown.Item>
+                  <Dropdown.Item eventKey="it"> Italian</Dropdown.Item>
+                  <Dropdown.Item eventKey="es"> Spanish</Dropdown.Item>
+                  <Dropdown.Item eventKey="ja"> Japanese</Dropdown.Item>
+                </DropdownButton>
+              </Col>
+                <Col sm={2}>
+                  <Button type="submit" onClick={(eventKey => this.translate(eventKey))}>Translate</Button>
+                </Col>
+              </Row>
+            </div>
+
+            <div>
+            <p>{this.state.translated}</p>
+            </div>
 
           </Col>
         </Row>
