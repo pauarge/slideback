@@ -15,6 +15,7 @@ class Receiver extends Component {
     this.state = {
       numPages: null,
       pageNumber: 1,
+      pdfURL: null,
     };
 
     this.socket = null;
@@ -30,7 +31,11 @@ class Receiver extends Component {
       })
     })
 
-
+    this.socket.on('newDoc', url => {
+      this.setState({
+        pdfURL: url,
+      })
+    })
   }
 
   onDocumentLoadSuccess = ({ numPages }) => {
@@ -50,7 +55,7 @@ class Receiver extends Component {
 
 
               <Document
-                  file={process.env.PUBLIC_URL + "./Report_hw2_bolon.pdf"}
+                  file={this.state.pdfURL}
                   onLoadSuccess={this.onDocumentLoadSuccess}
               >
                 <Page pageNumber={pageNumber} />

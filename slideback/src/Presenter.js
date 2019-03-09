@@ -2,10 +2,9 @@ import React, {Component} from 'react';
 import {Document, Page} from 'react-pdf';
 import {Button, ButtonToolbar, Alert, ProgressBar, Container, Row, Col, InputGroup, FormControl, ButtonGroup} from "react-bootstrap";
 import io from "socket.io-client";
+import axios from 'axios';
 
 import { SOCKET_URL } from './config';
-
-import Comments from './Comments'
 
 
 class Presenter extends Component {
@@ -17,7 +16,10 @@ class Presenter extends Component {
       pageNumber: 1,
       alertFirst: false,
       alertLast: false,
-      comments: []
+      comments: [],
+      success : false,
+      url : "",
+      pdfURL: null,
     };
 
     this.socket = null;
@@ -78,6 +80,35 @@ class Presenter extends Component {
     }
   };
 
+  handleChange = (ev) => {
+    this.setState({success: false, url : ""});
+
+  }
+
+  submitFile = (event) => {
+    event.preventDefault();
+    const formData = new FormData();
+    formData.append('file', this.state.file[0]);
+    axios.post(`http://localhost:8081/test-upload`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }).then(response => {
+      console.log(response.data);
+      this.setState({
+        pdfURL: response.data.Location,
+      })
+      this.socket.emit('newDoc', response.data.Location);
+      // handle your response;
+    }).catch(error => {
+      console.log(error);
+      // handle your error
+    });
+  }
+
+  handleFileUpload = (event) => {
+    this.setState({file: event.target.files});
+  }
 
   render() {
     const {pageNumber, numPages} = this.state;
@@ -91,7 +122,7 @@ class Presenter extends Component {
 
 
             <Document
-                file={process.env.PUBLIC_URL + "./Report_hw2_bolon.pdf"}
+                file={this.state.pdfURL}
                 onLoadSuccess={this.onDocumentLoadSuccess}
             >
               <Page pageNumber={pageNumber}/>
@@ -134,9 +165,6 @@ class Presenter extends Component {
                 </Alert>) : ''
             }
 
-
-
-
             <br></br>
 
             <div className="Satisfaction bar">
@@ -152,11 +180,13 @@ class Presenter extends Component {
 
 
             <br></br>
+
             <div className="upload-document">
               <p>Upload your new presentation: </p>
+              <form onSubmit={this.submitFile}>
             <div className="input-group">
               <div className="input-group-prepend">
-                <span className="input-group-text" id="inputGroupFileAddon01">Upload</span>
+                <button className="input-group-text" id="inputGroupFileAddon01">Upload</button>
               </div>
               <div className="custom-file">
                 <input
@@ -164,12 +194,14 @@ class Presenter extends Component {
                     className="custom-file-input"
                     id="inputGroupFile01"
                     aria-describedby="inputGroupFileAddon01"
+                    onChange={this.handleFileUpload}
                 />
                 <label className="custom-file-label" htmlFor="inputGroupFile01">
                   Choose file
                 </label>
               </div>
             </div>
+              </form>
             </div>
 
             <div>
