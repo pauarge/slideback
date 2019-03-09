@@ -3,6 +3,8 @@ import {Document, Page} from 'react-pdf';
 import {Button, ButtonToolbar, Alert, ProgressBar} from "react-bootstrap";
 import io from "socket.io-client";
 
+import { SOCKET_URL } from './config';
+
 class Presenter extends Component {
   constructor(props) {
     super(props);
@@ -18,7 +20,7 @@ class Presenter extends Component {
   }
 
   componentDidMount() {
-    this.socket = io('http://localhost:4000', {query: "mode=presenter"});
+    this.socket = io(SOCKET_URL, {query: "mode=presenter"});
   }
 
   onDocumentLoadSuccess = ({numPages}) => {

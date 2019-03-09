@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import io from 'socket.io-client';
 import {Document, Page} from "react-pdf";
 
+import { SOCKET_URL } from './config';
+
 class Receiver extends Component {
   constructor(props) {
     super(props);
@@ -16,7 +18,7 @@ class Receiver extends Component {
   }
 
   componentDidMount() {
-    this.socket = io('http://localhost:4000', { query: "mode=receiver" });
+    this.socket = io(SOCKET_URL, { query: "mode=receiver" });
 
     this.socket.on('pageChange', page => {
       console.log('Current page', page);
