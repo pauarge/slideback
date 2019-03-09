@@ -36,12 +36,12 @@ class Presenter extends Component {
   componentDidMount() {
     this.socket = io(SOCKET_URL, { query: 'mode=presenter' });
 
-    this.socket.on('newScore', function (data) {
-      console.log('new score = ', data);
-      this.setState({
-        attentionScore: data,
-      });
-    });
+    // this.socket.on('newScore', function (data) {
+    //   console.log('new score = ', data);
+    //   this.setState({
+    //     attentionScore: data,
+    //   });
+    // });
 
     this.socket.on('newCommentServer', (comment) => {
       const comments = this.state.comments;
@@ -227,7 +227,6 @@ class Presenter extends Component {
             </Col>
           </Row>
         </Container>
-
 
       );
     }
