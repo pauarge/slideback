@@ -194,9 +194,7 @@ class Presenter extends Component {
               <p>Upload your new presentation: </p>
               <form onSubmit={this.submitFile}>
             <div className="input-group">
-              <div className="input-group-prepend">
-                <button className="input-group-text" id="inputGroupFileAddon01">Upload</button>
-              </div>
+
               <div className="custom-file">
                 <input
                     type="file"
@@ -208,6 +206,10 @@ class Presenter extends Component {
                 <label className="custom-file-label" htmlFor="inputGroupFile01">
                   Choose file
                 </label>
+              </div>
+
+              <div className="input-group-prepend">
+                <button className="input-group-text" id="inputGroupFileAddon01">Upload</button>
               </div>
             </div>
               </form>
