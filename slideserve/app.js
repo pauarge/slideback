@@ -18,17 +18,10 @@ var bodyParser = require('body-parser');
 var aws = require('aws-sdk');
 
 app.use(bodyParser.json({limit: '64mb'}));
-
-app.use(function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*')
-  res.header('Access-Control-Allow-Credentials', true)
-  res.header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
-  next()
-})
+app.use(cors());
 
 
-// require('dotenv').config(); // Configure dotenv to load in the .env file
+require('dotenv').config(); // Configure dotenv to load in the .env file
 
 // Configure aws with your accessKeyId and your secretAccessKey
 aws.config.update({

@@ -1,1 +1,1 @@
-exports.SOCKET_URL = 'http://slideserve-prod.eu-central-1.elasticbeanstalk.com';
+exports.SOCKET_URL = 'http://0577bca6.ngrok.io';
