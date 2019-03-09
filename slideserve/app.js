@@ -21,7 +21,6 @@ var cors = require('cors');
 var bodyParser = require('body-parser');
 var aws = require('aws-sdk');
 
-app.use(cors());
 app.use(bodyParser.json({limit: '64mb'}));
 
 
