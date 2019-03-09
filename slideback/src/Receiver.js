@@ -113,7 +113,7 @@ class Receiver extends Component {
     const {pageNumber, numPages} = this.state;
 
     return (
-      <Container>
+      <Container fluid={true}>
         <Row>
 
           <Col sm={7}>

@@ -4,6 +4,8 @@ var io = require('socket.io')(http);
 var base64Img = require('base64-img');
 var request = require('superagent');
 
+var pdfUtil = require('pdf-to-text');
+
 
 const fs = require('fs');
 const fileType = require('file-type');
@@ -17,8 +19,8 @@ var cors = require('cors');
 var bodyParser = require('body-parser');
 var aws = require('aws-sdk');
 
-app.use(bodyParser.json({limit: '64mb'}));
 app.use(cors());
+app.use(bodyParser.json({limit: '64mb'}));
 
 
 require('dotenv').config(); // Configure dotenv to load in the .env file
@@ -88,11 +90,23 @@ app.post('/test-upload', (request, response) => {
     if (error) throw new Error(error);
     try {
       const path = files.file[0].path;
+
+      var option = {from: 0, to: 10};
+      pdfUtil.pdfToText(path, option, function(err, data) {
+        if (err) throw(err);
+        console.log(data); //print text
+      });
+
       const buffer = fs.readFileSync(path);
+
+
       const type = fileType(buffer);
       const timestamp = Date.now().toString();
       const fileName = `${timestamp}-lg`;
       const data = await uploadFile(buffer, fileName, type);
+
+
+
       return response.status(200).send(data);
     } catch (error) {
       console.log(error);

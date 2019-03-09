@@ -12,6 +12,7 @@
     "express": "^4.16.4",
     "file-type": "^10.9.0",
     "multiparty": "^4.2.1",
+    "pdf-to-text": "0.0.7",
     "socket.io": "^2.2.0",
     "superagent": "^4.1.0"
   },

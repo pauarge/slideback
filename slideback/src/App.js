@@ -11,9 +11,9 @@ class App extends Component {
     super(props);
 
     this.state = {
-      displayPresenter: false,
+      displayPresenter: true,
       displayReceiver: false,
-      displayVideo: true,
+      displayVideo: false,
     };
   }
 
@@ -61,7 +61,7 @@ class App extends Component {
 
 
         <div className="content">
-          <Container>
+          <Container fluid={true}>
             {this.state.displayPresenter && <Presenter/>}
             {this.state.displayReceiver && <Receiver/>}
             {this.state.displayVideo && <Video/>}

@@ -1,1 +1,1 @@
-exports.SOCKET_URL = 'http://0577bca6.ngrok.io';
+exports.SOCKET_URL = 'http://127.0.0.1:8081';
