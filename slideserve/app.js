@@ -14,6 +14,8 @@ const fileType = require('file-type');
 const bluebird = require('bluebird');
 const multiparty = require('multiparty');
 
+var metrics = {}
+
 var students = [];
 var presenter = null;
 
@@ -148,10 +150,53 @@ io.on('connection', function (socket) {
   })
 });
 
+/** Reference to API response JSON
+{
+  "faceId": "9be72f6f-06ae-41db-a2b0-1187b6f71751",
+  "faceRectangle": {
+    "top": 265,
+    "left": 507,
+    "width": 61,
+    "height": 61
+  },
+  "faceAttributes": {
+    "smile": 0.014,
+    "headPose": {
+      "pitch": 0.0,
+      "roll": -10.5,
+      "yaw": -6.3
+    },
+    "emotion": {
+      "anger": 0.0,
+      "contempt": 0.0,
+      "disgust": 0.0,
+      "fear": 0.0, 	
+      "happiness": 0.014,
+      "neutral": 0.985,
+      "sadness": 0.0,
+      "surprise": 0.0
+    }
+  }
+**/
 
-function computeNewScores(list_of_scores) {
+function computeNewScores(new_data) {
   //do computation
-  var new_scores = list_ofscores + 1
+  	var index;
+	data = JSON.parse(new_data);
+	for (index = 0; index < data.length; ++index) {
+    	metrics[data[index]["faceID"]]["faceAttributes"].push(data[index]["faceAttributes"])
+    	metrics[data[index]["faceID"]]["emotion"].push(data[index]["emotion"])
+	}
+
+	let attention_score = 50;
+	let emotion_score = 50;
+
+	//TODO:
+	// average on all users -> attention_score = variance of last 10 ["faceAttributes"]["headPose"]["yaw"] --> high variance = bad
+	// average on all users -> emotion_score = neutral + happiness +surprise - fear - anger  
+ 
+
+  var new_scores = (attention_score,emotion_score)
   if (new_scores != list_ofscores) {
     presenter.emit('newScore', new_scores)
   }
