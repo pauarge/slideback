@@ -1,234 +1,237 @@
-import React, {Component} from 'react';
-import {Document, Page} from 'react-pdf';
+import React, { Component } from 'react';
+import { Document, Page } from 'react-pdf';
 import {
-    Button,
-    ButtonToolbar,
-    Alert,
-    ProgressBar,
-    Container,
-    Row,
-    Col,
-    ButtonGroup
-} from "react-bootstrap";
-import io from "socket.io-client";
+  ButtonToolbar,
+  Alert,
+  ProgressBar,
+  Container,
+  Row,
+  Col,
+  ButtonGroup,
+} from 'react-bootstrap';
+import io from 'socket.io-client';
 import axios from 'axios';
 
-import {SOCKET_URL} from './config';
+import { SOCKET_URL } from './config';
 
 
 class Presenter extends Component {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.state = {
-            numPages: null,
-            pageNumber: 1,
-            alertFirst: false,
-            alertLast: false,
-            pdfURL: null,
-            comments: [],
-            attentionScore: 100,
-        };
+    this.state = {
+      numPages: null,
+      pageNumber: 1,
+      alertFirst: false,
+      alertLast: false,
+      pdfURL: null,
+      comments: [],
+      attentionScore: 100,
+    };
 
-        this.socket = null;
-    }
+    this.socket = null;
+  }
 
-    componentDidMount() {
-        this.socket = io(SOCKET_URL, {query: "mode=presenter"});
+  componentDidMount() {
+    this.socket = io(SOCKET_URL, { query: 'mode=presenter' });
 
-        this.socket.on('newScore', function (data) {
-            console.log('new score = ', data);
-            this.setState({
-                attentionScore: data
-            })
-        });
+    this.socket.on('newScore', function (data) {
+      console.log('new score = ', data);
+      this.setState({
+        attentionScore: data,
+      });
+    });
 
-        this.socket.on('newCommentServer', comment => {
-            const comments = this.state.comments
-            comments.push(comment);
-            this.setState({
-                textData: '',
-                comments
-            })
-        });
-    }
+    this.socket.on('newCommentServer', (comment) => {
+      const comments = this.state.comments;
+      comments.push(comment);
+      this.setState({
+        textData: '',
+        comments,
+      });
+    });
+  }
 
-    onDocumentLoadSuccess = ({numPages}) => {
-        this.setState({numPages});
+    onDocumentLoadSuccess = ({ numPages }) => {
+      this.setState({ numPages });
     };
 
     nextPage() {
-        let newPageNumber;
-        if (this.state.pageNumber === this.state.numPages && !this.state.alertLast) {
-            this.setState({alertLast: true});
-        } else if (this.state.pageNumber === this.state.numPages && this.state.alertLast) {
-            newPageNumber = 1;
-            this.setState({alertLast: false});
-        } else {
-            newPageNumber = this.state.pageNumber + 1;
-            this.setState({alertLast: false, alertFirst: false})
-        }
+      let newPageNumber;
+      if (this.state.pageNumber === this.state.numPages && !this.state.alertLast) {
+        this.setState({ alertLast: true });
+      } else if (this.state.pageNumber === this.state.numPages && this.state.alertLast) {
+        newPageNumber = 1;
+        this.setState({ alertLast: false });
+      } else {
+        newPageNumber = this.state.pageNumber + 1;
+        this.setState({ alertLast: false, alertFirst: false });
+      }
 
-        if (newPageNumber) {
-            this.setState({
-                pageNumber: newPageNumber
-            }, () => this.socket.emit('pageChange', this.state.pageNumber))
-        }
-    };
+      if (newPageNumber) {
+        this.setState({
+          pageNumber: newPageNumber,
+        }, () => this.socket.emit('pageChange', this.state.pageNumber));
+      }
+    }
 
     prevPage() {
-        let newPageNumber;
-        if (this.state.pageNumber === 1 && !this.state.alertFirst) {
-            this.setState({alertFirst: true})
-        } else if (this.state.pageNumber === 1 && this.state.alertFirst) {
-            newPageNumber = this.state.numPages;
-            this.setState({alertFirst: false})
-        } else {
-            newPageNumber = this.state.pageNumber - 1;
-            this.setState({alertFirst: false, alertLast: false})
-        }
+      let newPageNumber;
+      if (this.state.pageNumber === 1 && !this.state.alertFirst) {
+        this.setState({ alertFirst: true });
+      } else if (this.state.pageNumber === 1 && this.state.alertFirst) {
+        newPageNumber = this.state.numPages;
+        this.setState({ alertFirst: false });
+      } else {
+        newPageNumber = this.state.pageNumber - 1;
+        this.setState({ alertFirst: false, alertLast: false });
+      }
 
-        if (newPageNumber) {
-            this.setState({
-                pageNumber: newPageNumber
-            }, () => this.socket.emit('pageChange', this.state.pageNumber))
-        }
-    };
+      if (newPageNumber) {
+        this.setState({
+          pageNumber: newPageNumber,
+        }, () => this.socket.emit('pageChange', this.state.pageNumber));
+      }
+    }
 
     submitFile = (event) => {
-        event.preventDefault();
-        const formData = new FormData();
-        formData.append('file', this.state.file[0]);
+      event.preventDefault();
+      const formData = new FormData();
+      formData.append('file', this.state.file[0]);
 
-    axios.post(`${SOCKET_URL}/test-upload`, formData)
-      .then(response => {
-      console.log(response.data);
-      this.setState({
-        pdfURL: response.data.Location,
-      })
-      this.socket.emit('newDoc', response.data.Location);
-      // handle your response;
-    }).catch(error => {
-      console.log(error);
-      // handle your error
-    });
-  };
+      axios.post(`${SOCKET_URL}/test-upload`, formData)
+        .then((response) => {
+          console.log(response.data);
+          this.setState({
+            pdfURL: response.data.Location,
+          });
+          this.socket.emit('newDoc', response.data.Location);
+          // handle your response;
+        }).catch((error) => {
+          console.log(error);
+          // handle your error
+        });
+    };
 
     handleFileUpload = (event) => {
-        this.setState({file: event.target.files});
+      this.setState({ file: event.target.files });
     };
 
     render() {
-        const {pageNumber, numPages} = this.state;
-        const now = this.state.attentionScore;
+      const { pageNumber, numPages } = this.state;
+      const now = this.state.attentionScore;
 
-        return (
-            <Container fluid={true}>
+      return (
+        <Container fluid>
+          <Row>
+
+            <Col sm={7}>
+
+
+              <Document
+                file={this.state.pdfURL}
+                onLoadSuccess={this.onDocumentLoadSuccess}
+              >
+                <Page pageNumber={pageNumber} />
+              </Document>
+            </Col>
+            <Col sm={5}>
+
+              <br />
+              <br />
+              <br />
+              <br />
+
+              <div className="button">
+                <ButtonToolbar>
+                  <ButtonGroup className="mr-4">
+                    <BpkButton onClick={() => this.prevPage()}>Prev</BpkButton>
+                  </ButtonGroup>
+                  <ButtonGroup className="mr-4">
+                    <BpkButton onClick={() => this.nextPage()}>Next</BpkButton>
+                  </ButtonGroup>
+                  <p>Page {pageNumber} of {numPages}</p>
+                </ButtonToolbar>
+              </div>
+
+              <br />
+
+
+              {this.state.alertFirst
+                ? (
+                  <BpkAlert defaultShow={this.state.alertFirst} variant="info first">
+                    <Alert.Heading>You are already in the first page of the document</Alert.Heading>
+                    <p>To continue click of 'Prev'</p>
+                  </BpkAlert>
+                ) : ''
+                        }
+
+
+              {this.state.alertLast
+                ? (
+                  <BpkAlert variant="info last">
+                    <Alert.Heading>You are already in the last page of the document</Alert.Heading>
+                    <p>To continue click of 'Next'</p>
+                  </BpkAlert>
+                ) : ''
+                        }
+
+              <br />
+
+              <div className="Satisfaction bar">
                 <Row>
-
-                    <Col sm={7}>
-
-
-                        <Document
-                            file={this.state.pdfURL}
-                            onLoadSuccess={this.onDocumentLoadSuccess}
-                        >
-                            <Page pageNumber={pageNumber}/>
-                        </Document>
-                    </Col>
-                    <Col sm={5}>
-
-                        <br></br>
-                        <br></br>
-                        <br></br>
-                        <br></br>
-
-                        <div className="button">
-                            <ButtonToolbar>
-                                <ButtonGroup className="mr-4">
-                                    <Button onClick={() => this.prevPage()}>Prev</Button>
-                                </ButtonGroup>
-                                <ButtonGroup className="mr-4">
-                                    <Button onClick={() => this.nextPage()}>Next</Button>
-                                </ButtonGroup>
-                                <p>Page {pageNumber} of {numPages}</p>
-                            </ButtonToolbar>
-                        </div>
-
-                        <br></br>
-
-
-                        {this.state.alertFirst ?
-                            (<Alert defaultShow={this.state.alertFirst} variant="info first">
-                                <Alert.Heading>You are already in the first page of the document</Alert.Heading>
-                                <p>To continue click of 'Prev'</p>
-                            </Alert>) : ''
-                        }
-
-
-                        {this.state.alertLast ?
-                            (<Alert variant="info last">
-                                <Alert.Heading>You are already in the last page of the document</Alert.Heading>
-                                <p>To continue click of 'Next'</p>
-                            </Alert>) : ''
-                        }
-
-                        <br></br>
-
-                        <div className="Satisfaction bar">
-                            <Row>
-                                <Col sm={4}>
-                                    <p>Satisfaction level: </p>
-                                </Col>
-                                <Col sm={8}>
-                                    <ProgressBar now={this.state.pageNumber * this.state.numPages}
-                                                 label={`${this.state.pageNumber * this.state.numPages}%`}/>
-                                </Col>
-                            </Row>
-                        </div>
-
-
-                        <br></br>
-
-                        <div className="upload-document">
-                            <p>Upload your new presentation: </p>
-                            <form onSubmit={this.submitFile}>
-                                <div className="input-group">
-
-                                    <div className="custom-file">
-                                        <input
-                                            type="file"
-                                            className="custom-file-input"
-                                            id="inputGroupFile01"
-                                            aria-describedby="inputGroupFileAddon01"
-                                            onChange={this.handleFileUpload}
-                                        />
-                                        <label className="custom-file-label" htmlFor="inputGroupFile01">
-                                            Choose file
-                                        </label>
-                                    </div>
-
-                                    <div className="input-group-prepend">
-                                        <button className="input-group-text" id="inputGroupFileAddon01">Upload</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div>
-                            <div className="doubts">
-                                {this.state.comments.map(comment => {
-                                    return <p>{comment}</p>
-                                })}
-                            </div>
-                        </div>
-
-                    </Col>
+                  <Col sm={4}>
+                    <p>Satisfaction level: </p>
+                  </Col>
+                  <Col sm={8}>
+                    <ProgressBar
+                        now={this.state.pageNumber * this.state.numPages}
+                        label={`${this.state.pageNumber * this.state.numPages}%`}
+                      />
+                  </Col>
                 </Row>
-            </Container>
+              </div>
 
 
-        );
+              <br />
+
+              <div className="upload-document">
+                <p>Upload your new presentation: </p>
+                <form onSubmit={this.submitFile}>
+                  <div className="input-group">
+
+                    <div className="custom-file">
+                        <input
+                            type="file"
+                            className="custom-file-input"
+                            id="inputGroupFile01"
+                            aria-describedby="inputGroupFileAddon01"
+                            onChange={this.handleFileUpload}
+                          />
+                        <label className="custom-file-label" htmlFor="inputGroupFile01">
+                                            Choose file
+                          </label>
+                      </div>
+
+                    <div className="input-group-prepend">
+                        <button className="input-group-text" id="inputGroupFileAddon01">Upload</button>
+                      </div>
+                  </div>
+                </form>
+              </div>
+
+              <div>
+                <div className="doubts">
+                  {this.state.comments.map(comment => <p>{comment}</p>)}
+                </div>
+              </div>
+
+            </Col>
+          </Row>
+        </Container>
+
+
+      );
     }
 }
 
