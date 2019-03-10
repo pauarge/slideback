@@ -1,15 +1,31 @@
-import React from 'react';
+import { React, Component } from 'react';
 import Webcam from 'react-webcam';
 import request from 'superagent';
 
 import { Button } from 'react-bootstrap';
 
 
-class Video extends React.Component {
-  state = {
-    imageData: null,
-    intervalID: null,
-    analysisUrl: null,
+class Video extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      imageData: null,
+      intervalID: null,
+      analysisUrl: null,
+    };
+
+    this.id = this.makeid();
+  }
+
+  makeid() {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for (var i = 0; i < 5; i++)
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
   }
 
   setRef = (webcam) => {
@@ -24,7 +40,7 @@ class Video extends React.Component {
       });
       request
         .post('http://localhost:8081/image')
-        .send({ b64img: imageSrc })
+        .send({ b64img: imageSrc, id: this.id })
         .set('Content-Type', 'application/json')
         .then((res) => {
           console.log(res);
@@ -32,7 +48,6 @@ class Video extends React.Component {
       // this.processImage()
     }
   };
-
 
   processImage() {
     const subscriptionKey = '4787f1decd6c451eb365b52b7092151c';
