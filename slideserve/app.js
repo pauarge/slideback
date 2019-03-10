@@ -143,7 +143,7 @@ app.get('/', (req, res) => {
 
 app.post('/image', (req, res) => {
   console.log('got image');
-  const { b64img } = req.body;
+  const { b64img, id } = req.body;
   base64Img.img(b64img, './images', 'test', async (err, filepath) => {
     const subscriptionKey = '4787f1decd6c451eb365b52b7092151c';
 
