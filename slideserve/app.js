@@ -38,11 +38,30 @@ aws.config.setPromisesDependency(bluebird);
 
 const s3 = new aws.S3();
 
-function computeNewScores(new_data) {
+
+function StandardDeviation(numbersArr) {
+    //--CALCULATE AVAREGE--
+    var total = 0;
+    for(var key in numbersArr) 
+       total += numbersArr[key];
+    var meanVal = total / numbersArr.length;
+    //--CALCULATE AVAREGE--
+  
+    //--CALCULATE STANDARD DEVIATION--
+    var max = Math.max.apply(Math,numbersArr);
+    var min = Math.min.apply(Math,numbersArr);
+    if (max-meanVal>meanVal-min){
+    	return max-meanVal;
+    }
+    else{
+    	return meanVal-min;
+    }
+}
+
+function computeNewScores(id, new_data) {
     // do computation
     let index = 0;
     let data = JSON.parse(new_data);
-
 /** Reference to API response JSON
 {
   "faceId": "9be72f6f-06ae-41db-a2b0-1187b6f71751",
@@ -72,8 +91,8 @@ function computeNewScores(new_data) {
   }
 * */
 
-    if (!(data[0]["faceId"] in metrics)){
-  		metrics[data[0]["faceId"]] = {
+    if (!(id in metrics)){
+  		metrics[id] = {
   			"headPose":{
   				"roll": [],
   				"yaw": [],
@@ -92,27 +111,35 @@ function computeNewScores(new_data) {
   		}
 	}
 	
-	metrics[data[0]["faceId"]]["headPose"]["yaw"].push(data[0]["faceAttributes"]["headPose"]["yaw"]);
-	metrics[data[0]["faceId"]]["headPose"]["roll"].push(data[0]["faceAttributes"]["headPose"]["roll"]);
-   	metrics[data[0]["faceId"]]["emotion"]["happiness"].push(data[0]["faceAttributes"]["emotion"]["happiness"]);
-   	metrics[data[0]["faceId"]]["smile"].push(data[0]["faceAttributes"]["smile"]);
+	if (data[0]["faceAttributes"] == null){
+		metrics[id]["headPose"]["yaw"].push(25);
+		metrics[id]["headPose"]["yaw"].push(-25);
+	}
+	else{
+		metrics[id]["headPose"]["yaw"].push(data[0]["faceAttributes"]["headPose"]["yaw"]);
+		metrics[id]["headPose"]["roll"].push(data[0]["faceAttributes"]["headPose"]["roll"]);
+
+	   	metrics[id]["emotion"]["anger"].push(data[0]["faceAttributes"]["emotion"]["anger"]);
+	   	metrics[id]["emotion"]["contempt"].push(data[0]["faceAttributes"]["emotion"]["contempt"]);
+	   	metrics[id]["emotion"]["disgust"].push(data[0]["faceAttributes"]["emotion"]["disgust"]);
+	   	metrics[id]["emotion"]["fear"].push(data[0]["faceAttributes"]["emotion"]["fear"]);
+	   	metrics[id]["emotion"]["happiness"].push(data[0]["faceAttributes"]["emotion"]["happiness"]);
+	   	metrics[id]["emotion"]["neutral"].push(data[0]["faceAttributes"]["emotion"]["neutral"]);
+	   	metrics[id]["emotion"]["sadness"].push(data[0]["faceAttributes"]["emotion"]["sadness"]);
+	   	metrics[id]["emotion"]["surprise"].push(data[0]["faceAttributes"]["emotion"]["surprise"]); 
+
+	   	metrics[id]["smile"].push(data[0]["faceAttributes"]["smile"]);
+	}
 
 
+   	while (metrics[id]["headPose"]["yaw"].length > 10){
+   		metrics[id]["headPose"]["yaw"].shift();
+   	}
 
-  // for (index = 0; index < data.length; ++index) {
-  // 	if ([data[index].faceID] in metrics){
-  // 		metrics[data[index].faceID].faceAttributes.push(data[index].faceAttributes);
-	 //   	metrics[data[index].faceID].emotion.push(data[index].emotion);
-  // 	}
-  //  	else{
-  //  		metrics[data[index].faceID].faceAttributes = [data[index].faceAttributes];
-  //  		metrics[data[index].faceID].emotion = [data[index].emotion];
-  //  	}
-  // }
+  console.log(metrics[id]["headPose"]["yaw"])
+  console.log(StandardDeviation(metrics[id]["headPose"]["yaw"]))
 
-  console.log(metrics)
-
-  const attention_score = Math.random() * 100;
+  const attention_score = StandardDeviation(metrics[id]["headPose"]["yaw"]);
   const emotion_score = Math.random() * 100;
 
   // TODO:
@@ -161,12 +188,10 @@ app.post('/image', (req, res) => {
 		      .set('Ocp-Apim-Subscription-Key', subscriptionKey)
 		      .set('Content-Type', 'application/json')
 		      .then((resp) => {
-		        console.log(`SUCCESS!${JSON.stringify(resp.body)}`);
-		        computeNewScores(JSON.stringify(resp.body));
+		        // console.log(`SUCCESS!${JSON.stringify(resp.body)}`);
+		        computeNewScores(id, JSON.stringify(resp.body));
 		      });
     	});
-
-
   });
   res.json('ok');
 });
