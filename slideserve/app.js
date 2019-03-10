@@ -21,6 +21,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const aws = require('aws-sdk');
 
+const blackList = ['idiot', 'fuck', 'dumb', 'shit'];
+
 app.use(cors());
 app.use(bodyParser.json({ limit: '64mb' }));
 
@@ -261,6 +263,9 @@ io.on('connection', (socket) => {
   });
 
   socket.on('newComment', (comment) => {
+    for (let i = 0; i < blackList.length; i++)
+      if (comment.includes(blackList[i]))
+        comment = 'Harmful comment removed';
     socket.broadcast.emit('newCommentServer', comment);
   });
 });
