@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import Webcam from 'react-webcam';
 import request from 'superagent';
 
-import { Button } from 'react-bootstrap';
-
 
 class Video extends Component {
   constructor(props) {

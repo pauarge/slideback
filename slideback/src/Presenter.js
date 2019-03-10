@@ -117,7 +117,7 @@ class Presenter extends Component {
             progressUpload: current + 1,
           });
         }
-      }, 100);
+      }, 500);
 
       axios.post(`${SOCKET_URL}/upload`, formData)
         .then((response) => {

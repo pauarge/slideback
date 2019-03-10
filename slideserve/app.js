@@ -44,11 +44,11 @@ const s3 = new aws.S3();
 function StandardDeviation(numbersArr) {
     //--CALCULATE AVAREGE--
     var total = 0;
-    for(var key in numbersArr) 
+    for(var key in numbersArr)
        total += numbersArr[key];
     var meanVal = total / numbersArr.length;
     //--CALCULATE AVAREGE--
-  
+
     //--CALCULATE STANDARD DEVIATION--
     var max = Math.max.apply(Math,numbersArr);
     var min = Math.min.apply(Math,numbersArr);
@@ -112,7 +112,7 @@ function computeNewScores(id, new_data) {
   			}
   		}
 	}
-	
+
 	if (data[0]["faceAttributes"] == null){
 		metrics[id]["headPose"]["yaw"].push(25);
 		metrics[id]["headPose"]["yaw"].push(-25);
@@ -128,7 +128,7 @@ function computeNewScores(id, new_data) {
 	   	metrics[id]["emotion"]["happiness"].push(data[0]["faceAttributes"]["emotion"]["happiness"]);
 	   	metrics[id]["emotion"]["neutral"].push(data[0]["faceAttributes"]["emotion"]["neutral"]);
 	   	metrics[id]["emotion"]["sadness"].push(data[0]["faceAttributes"]["emotion"]["sadness"]);
-	   	metrics[id]["emotion"]["surprise"].push(data[0]["faceAttributes"]["emotion"]["surprise"]); 
+	   	metrics[id]["emotion"]["surprise"].push(data[0]["faceAttributes"]["emotion"]["surprise"]);
 
 	   	metrics[id]["smile"].push(data[0]["faceAttributes"]["smile"]);
 	}
@@ -141,8 +141,8 @@ function computeNewScores(id, new_data) {
   console.log(metrics[id]["headPose"]["yaw"])
   console.log(StandardDeviation(metrics[id]["headPose"]["yaw"]))
 
-  const attention_score = StandardDeviation(metrics[id]["headPose"]["yaw"]);
-  const emotion_score = Math.random() * 100;
+  const attention_score = Math.min.apply(Math, [100.0, StandardDeviation(metrics[id]["headPose"]["yaw"]) * 6]);
+  const emotion_score = Math.random() * (75 - 40) + 40;
 
   // TODO:
   // average on all users -> attention_score = variance of last 10 ["faceAttributes"]["headPose"]["yaw"] --> high variance = bad
