@@ -28,8 +28,10 @@ class Presenter extends Component {
       alertLast: false,
       pdfURL: undefined,
       comments: [],
-      attentionScore: 100,
-      emotionScore: 100,
+      attentionScore: 0,
+      emotionScore: 0,
+      uploadState: 0,
+      progressUpload: 0,
     };
 
     this.socket = null;
@@ -104,11 +106,25 @@ class Presenter extends Component {
       const formData = new FormData();
       formData.append('file', this.state.file[0]);
 
+      this.setState({
+        uploadState: 1,
+      });
+
+      window.setInterval(() => {
+        const current = this.state.progressUpload;
+        if (current < 500) {
+          this.setState({
+            progressUpload: current + 1,
+          });
+        }
+      }, 100);
+
       axios.post(`${SOCKET_URL}/upload`, formData)
         .then((response) => {
           console.log(response.data);
           this.setState({
             pdfURL: response.data.Location,
+            uploadState: 0,
           });
           this.socket.emit('newDoc', response.data.Location);
           // handle your response;
@@ -207,8 +223,9 @@ class Presenter extends Component {
               <div className="upload-document">
                 <h5>Upload your new presentation: </h5>
                 <form onSubmit={this.submitFile}>
+                  <p>{this.state.uploadState === 1 ?
+                    <ProgressBar animated now={this.state.progressUpload} label="uploading..." /> : ''}</p>
                   <div className="input-group">
-
                     <div className="custom-file">
                         <input
                             type="file"
