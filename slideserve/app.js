@@ -39,13 +39,78 @@ aws.config.setPromisesDependency(bluebird);
 const s3 = new aws.S3();
 
 function computeNewScores(new_data) {
-  // do computation
-  // let index;
-  // let data = JSON.parse(new_data);
+    // do computation
+    let index = 0;
+    let data = JSON.parse(new_data);
+
+/** Reference to API response JSON
+{
+  "faceId": "9be72f6f-06ae-41db-a2b0-1187b6f71751",
+  "faceRectangle": {
+    "top": 265,
+    "left": 507,
+    "width": 61,
+    "height": 61
+  },
+  "faceAttributes": {
+    "smile": 0.014,
+    "headPose": {
+      "pitch": 0.0,
+      "roll": -10.5,
+      "yaw": -6.3
+    },
+    "emotion": {
+      "anger": 0.0,
+      "contempt": 0.0,
+      "disgust": 0.0,
+      "fear": 0.0,
+      "happiness": 0.014,
+      "neutral": 0.985,
+      "sadness": 0.0,
+      "surprise": 0.0
+    }
+  }
+* */
+
+    if (!(data[0]["faceId"] in metrics)){
+  		metrics[data[0]["faceId"]] = {
+  			"headPose":{
+  				"roll": [],
+  				"yaw": [],
+  			},
+  			"smile":[],
+  			"emotion":{
+  				"anger":[],
+  				"contempt":[],
+  				"disgust":[],
+  				"fear":[],
+  				"happiness":[],
+  				"neutral":[],
+  				"sadness":[],
+  				"surprise":[],
+  			}
+  		}
+	}
+	
+	metrics[data[0]["faceId"]]["headPose"]["yaw"].push(data[0]["faceAttributes"]["headPose"]["yaw"]);
+	metrics[data[0]["faceId"]]["headPose"]["roll"].push(data[0]["faceAttributes"]["headPose"]["roll"]);
+   	metrics[data[0]["faceId"]]["emotion"]["happiness"].push(data[0]["faceAttributes"]["emotion"]["happiness"]);
+   	metrics[data[0]["faceId"]]["smile"].push(data[0]["faceAttributes"]["smile"]);
+
+
+
   // for (index = 0; index < data.length; ++index) {
-  //   	metrics[data[index].faceID].faceAttributes.push(data[index].faceAttributes);
-  //  	metrics[data[index].faceID].emotion.push(data[index].emotion);
+  // 	if ([data[index].faceID] in metrics){
+  // 		metrics[data[index].faceID].faceAttributes.push(data[index].faceAttributes);
+	 //   	metrics[data[index].faceID].emotion.push(data[index].emotion);
+  // 	}
+  //  	else{
+  //  		metrics[data[index].faceID].faceAttributes = [data[index].faceAttributes];
+  //  		metrics[data[index].faceID].emotion = [data[index].emotion];
+  //  	}
   // }
+
+  console.log(metrics)
 
   const attention_score = Math.random() * 100;
   const emotion_score = Math.random() * 100;
@@ -84,19 +149,24 @@ app.post('/image', (req, res) => {
 
     const buffer = fs.readFileSync('./images/test.jpg');
     const type = fileType(buffer);
-    const fileName = 'webcam/test.jpg';
-    await uploadFile(buffer, fileName, type);
+    const timestamp = Date.now().toString();
+    const fileName = `webcam/test${timestamp}`;
+    console.log(fileName)
+    await uploadFile(buffer, fileName, type)
+    	.then(()=> {
+		    request
+		      .post('https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false&returnFaceAttributes=headPose,emotion,smile')
+		      // .send({ url: 'https://www.thoughtco.com/thmb/08sd14jZzhDl5nX4Qy0xqj82nUc=/768x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-141090015-5ad4786efa6bcc0036b494de.jpg' })
+		      .send({ url: `https://s3.eu-central-1.amazonaws.com/slideback-bucket/${fileName}.jpg` })
+		      .set('Ocp-Apim-Subscription-Key', subscriptionKey)
+		      .set('Content-Type', 'application/json')
+		      .then((resp) => {
+		        console.log(`SUCCESS!${JSON.stringify(resp.body)}`);
+		        computeNewScores(JSON.stringify(resp.body));
+		      });
+    	});
 
-    request
-      .post('https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=true&returnFaceAttributes=headPose')
-      // putting an actualy url like "https://www.thoughtco.com/thmb/08sd14jZzhDl5nX4Qy0xqj82nUc=/768x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-141090015-5ad4786efa6bcc0036b494de.jpg" works
-      .send({ url: 'https://s3.eu-central-1.amazonaws.com/webcam/test.jpg' })
-      .set('Ocp-Apim-Subscription-Key', subscriptionKey)
-      .set('Content-Type', 'application/json')
-      .then((resp) => {
-        console.log(`SUCCESS!${JSON.stringify(resp.body)}`);
-        computeNewScores(5);
-      });
+
   });
   res.json('ok');
 });
@@ -170,34 +240,7 @@ io.on('connection', (socket) => {
   });
 });
 
-/** Reference to API response JSON
-{
-  "faceId": "9be72f6f-06ae-41db-a2b0-1187b6f71751",
-  "faceRectangle": {
-    "top": 265,
-    "left": 507,
-    "width": 61,
-    "height": 61
-  },
-  "faceAttributes": {
-    "smile": 0.014,
-    "headPose": {
-      "pitch": 0.0,
-      "roll": -10.5,
-      "yaw": -6.3
-    },
-    "emotion": {
-      "anger": 0.0,
-      "contempt": 0.0,
-      "disgust": 0.0,
-      "fear": 0.0,
-      "happiness": 0.014,
-      "neutral": 0.985,
-      "sadness": 0.0,
-      "surprise": 0.0
-    }
-  }
-* */
+
 
 
 // io.on('connection', function(socket){
