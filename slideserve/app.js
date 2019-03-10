@@ -38,6 +38,28 @@ aws.config.setPromisesDependency(bluebird);
 
 const s3 = new aws.S3();
 
+function computeNewScores(new_data) {
+  // do computation
+  // let index;
+  // let data = JSON.parse(new_data);
+  // for (index = 0; index < data.length; ++index) {
+  //   	metrics[data[index].faceID].faceAttributes.push(data[index].faceAttributes);
+  //  	metrics[data[index].faceID].emotion.push(data[index].emotion);
+  // }
+
+  const attention_score = Math.random() * 100;
+  const emotion_score = Math.random() * 100;
+
+  // TODO:
+  // average on all users -> attention_score = variance of last 10 ["faceAttributes"]["headPose"]["yaw"] --> high variance = bad
+  // average on all users -> emotion_score = neutral + happiness +surprise - fear - anger
+
+  io.emit('newScore', JSON.stringify({
+    attention_score,
+    emotion_score,
+  }));
+}
+
 // abstracts function to upload a file returning a promise
 const uploadFile = (buffer, name, type) => {
   const params = {
@@ -57,29 +79,24 @@ app.get('/', (req, res) => {
 app.post('/image', (req, res) => {
   console.log('got image');
   const { b64img } = req.body;
-  computeNewScores(5);
-  base64Img.img(b64img, './images', 'test', (err, filepath) => {
+  base64Img.img(b64img, './images', 'test', async (err, filepath) => {
     const subscriptionKey = '4787f1decd6c451eb365b52b7092151c';
 
-    // request
-    //   .post('https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=true&returnFaceAttributes=headPose')
-    //   // putting an actualy url like "https://www.thoughtco.com/thmb/08sd14jZzhDl5nX4Qy0xqj82nUc=/768x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-141090015-5ad4786efa6bcc0036b494de.jpg" works
-    //   .send({ url: 'http://sourabhs.space/test.jpg' })
-    //   .set('Ocp-Apim-Subscription-Key', subscriptionKey)
-    //   .set('Content-Type', 'application/json')
-    //   .then((res) => {
-    //     console.log(`SUCCESS!${JSON.stringify(res.body)}`);
-    //     computeNewScores(5);
-    //   });
-    // request
-    //   .post('https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=true&returnFaceAttributes=headPose')
-    //   // putting an actualy url like "https://www.thoughtco.com/thmb/08sd14jZzhDl5nX4Qy0xqj82nUc=/768x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-141090015-5ad4786efa6bcc0036b494de.jpg" works
-    //   .send({ url: 'http://sourabhs.space/test.jpg' })
-    //   .set('Ocp-Apim-Subscription-Key', subscriptionKey)
-    //   .set('Content-Type', 'application/json')
-    //   .then((res) => {
-    //     console.log(`SUCCESS!${JSON.stringify(res.body)}`);
-    //   });
+    const buffer = fs.readFileSync('./images/test.jpg');
+    const type = fileType(buffer);
+    const fileName = 'webcam/test.jpg';
+    await uploadFile(buffer, fileName, type);
+
+    request
+      .post('https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=true&returnFaceAttributes=headPose')
+      // putting an actualy url like "https://www.thoughtco.com/thmb/08sd14jZzhDl5nX4Qy0xqj82nUc=/768x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-141090015-5ad4786efa6bcc0036b494de.jpg" works
+      .send({ url: 'https://s3.eu-central-1.amazonaws.com/webcam/test.jpg' })
+      .set('Ocp-Apim-Subscription-Key', subscriptionKey)
+      .set('Content-Type', 'application/json')
+      .then((resp) => {
+        console.log(`SUCCESS!${JSON.stringify(resp.body)}`);
+        computeNewScores(5);
+      });
   });
   res.json('ok');
 });
@@ -100,7 +117,6 @@ app.post('/upload', (request, response) => {
       });
 
       const buffer = fs.readFileSync(path);
-
       const type = fileType(buffer);
       const timestamp = Date.now().toString();
       const fileName = `${timestamp}-lg`;
@@ -182,29 +198,6 @@ io.on('connection', (socket) => {
     }
   }
 * */
-
-function computeNewScores(new_data) {
-  // do computation
-  // let index;
-  // let data = JSON.parse(new_data);
-  // for (index = 0; index < data.length; ++index) {
-  //   	metrics[data[index].faceID].faceAttributes.push(data[index].faceAttributes);
-  //  	metrics[data[index].faceID].emotion.push(data[index].emotion);
-  // }
-
-  const attention_score = Math.random() * 100;
-  const emotion_score = Math.random() * 100;
-
-  // TODO:
-  // average on all users -> attention_score = variance of last 10 ["faceAttributes"]["headPose"]["yaw"] --> high variance = bad
-  // average on all users -> emotion_score = neutral + happiness +surprise - fear - anger
-
-  const new_scores = {
-    attention_score,
-    emotion_score
-  };
-  io.emit('newScore', JSON.stringify(new_scores));
-}
 
 
 // io.on('connection', function(socket){
