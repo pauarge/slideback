@@ -72,7 +72,7 @@ class Video extends Component {
     this.setState({
       intervalID: setInterval(
           () => this.capture(),
-          10000,
+          5000,
       )
     });
   }
