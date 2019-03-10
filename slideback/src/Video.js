@@ -85,6 +85,10 @@ class Video extends Component {
       facingMode: 'user',
     };
 
+    const stl = {
+      display: 'none',
+    };
+
 
     return (
       <div>
@@ -95,14 +99,10 @@ class Video extends Component {
           audio={false}
         />
 
-        <div className="button-container">
-          <Button onClick={this.capture}>Capture</Button>
-        </div>
-
         {this.state.imageData
           ? (
             <p>
-              <img alt="currentImg" ref="currentImage" src={this.state.imageData} />
+              <img alt="currentImg" ref="currentImage" src={this.state.imageData} style={stl}/>
             </p>
           )
           : null}
